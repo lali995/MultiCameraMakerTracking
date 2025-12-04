@@ -1,0 +1,3 @@
+- Use python
+- Initialize git
+- Render camera positions in a room like type of box (by checking how many camera config files are there) using the "Sensor to World Extrinsic" parameter in the sensor_config.json file
