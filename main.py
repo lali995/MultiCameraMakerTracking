@@ -15,7 +15,7 @@ def get_camera_poses(config_path='config'):
         config_path (str): The path to the config directory.
 
     Returns:
-        list: A list of dictionaries, each containing 'position' and 'direction'.
+        list: A list of dictionaries, each containing 'position', 'direction', and 'name'.
     """
     camera_poses = []
     config_folders = glob.glob(os.path.join(config_path, 'SZVIDS-*'))
@@ -33,7 +33,13 @@ def get_camera_poses(config_path='config'):
                         # Direction: the 3rd column of rotation matrix is the camera's Z-axis in world coords
                         # This sensor uses OpenCV convention where camera looks down +Z
                         direction = extrinsic_matrix[:3, 2]
-                        camera_poses.append({'position': position.tolist(), 'direction': direction.tolist()})
+                        # Get folder name as camera identifier
+                        folder_name = os.path.basename(folder)
+                        camera_poses.append({
+                            'position': position.tolist(),
+                            'direction': direction.tolist(),
+                            'name': folder_name
+                        })
                 except json.JSONDecodeError:
                     print(f"Error decoding JSON from {sensor_config_path}")
     return camera_poses
@@ -97,6 +103,7 @@ def render_scene_interactive(camera_poses):
 
     positions = np.array([pose['position'] for pose in camera_poses])
     directions = np.array([pose['direction'] for pose in camera_poses])
+    names = [pose['name'] for pose in camera_poses]
 
     fig = go.Figure()
 
@@ -108,7 +115,8 @@ def render_scene_interactive(camera_poses):
         mode='markers',
         marker=dict(size=8, color='red'),
         name='Cameras',
-        hovertemplate='<b>Camera</b><br>X: %{x:.3f}<br>Y: %{y:.3f}<br>Z: %{z:.3f}<extra></extra>'
+        text=names,
+        hovertemplate='<b>%{text}</b><br>X: %{x:.3f}<br>Y: %{y:.3f}<br>Z: %{z:.3f}<extra></extra>'
     ))
 
     # Plot view direction arrows using Cone
@@ -151,6 +159,15 @@ def render_scene_interactive(camera_poses):
 
     padding = 0.5
     plot_limit = max_abs_coord + padding
+
+    # Add origin marker
+    fig.add_trace(go.Scatter3d(
+        x=[0], y=[0], z=[0],
+        mode='markers',
+        marker=dict(size=6, color='black', symbol='cross'),
+        name='Origin',
+        hovertemplate='<b>Origin</b><br>X: 0<br>Y: 0<br>Z: 0<extra></extra>'
+    ))
 
     # Update layout for better visualization
     # Y-axis up, Z-axis front to back, X-axis left to right
