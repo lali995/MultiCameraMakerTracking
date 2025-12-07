@@ -6,6 +6,8 @@ open3d>=0.17.0
 matplotlib>=3.5.0
 plotly>=5.0.0
 
-# Future ArUco detection (uncomment when needed)
-# opencv-python>=4.8.0
-# opencv-contrib-python>=4.8.0
+# ArUco marker detection and generation
+opencv-contrib-python>=4.8.0
+
+# Orbbec camera support (optional - install if using Orbbec cameras)
+# pyorbbecsdk>=1.0.0

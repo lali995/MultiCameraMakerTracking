@@ -9,6 +9,8 @@ A real-time ArUco marker tracking and visualization system for multi-camera setu
 ## Features
 
 - **Real-time marker tracking** with Open3D visualization
+- **ArUco marker generator** for creating printable markers
+- **Orbbec camera integration** for RGB-D marker tracking
 - **Marker orientation visualization** with XYZ axes (red=X, green=Y, blue=Z)
 - **Simulated tracker** for testing without camera hardware
 - **Multiple motion patterns**: circular, linear, figure-8, random walk
@@ -23,11 +25,15 @@ A real-time ArUco marker tracking and visualization system for multi-camera setu
 MultiCameraMakerTracking/
 ├── src/
 │   ├── core/           # Message bus, data types, config loader
-│   ├── tracking/       # Tracker implementations (simulated, future ArUco)
+│   ├── markers/        # ArUco marker generation
+│   ├── tracking/       # Tracker implementations (simulated, Orbbec)
 │   └── visualization/  # Open3D viewer and scene management
 ├── scripts/
-│   └── run_full_system.py  # Main entry point
+│   ├── run_full_system.py    # Simulated tracking demo
+│   ├── run_orbbec_tracker.py # Orbbec camera tracking
+│   └── generate_markers.py   # Generate printable markers
 ├── config/             # Camera configurations
+├── markers/            # Generated marker images (output)
 ├── main.py             # Legacy Plotly visualization
 └── requirements.txt
 ```
@@ -37,8 +43,10 @@ MultiCameraMakerTracking/
 - Python 3.x
 - numpy
 - open3d
+- opencv-contrib-python (for ArUco detection)
 - matplotlib (optional, for legacy visualization)
 - plotly (optional, for legacy visualization)
+- pyorbbecsdk (optional, for Orbbec cameras)
 
 ## Installation
 
@@ -46,14 +54,63 @@ MultiCameraMakerTracking/
 pip install -r requirements.txt
 ```
 
-Or manually:
+For Orbbec camera support:
 ```bash
-pip install numpy open3d
+pip install pyorbbecsdk
 ```
 
 ## Usage
 
-### Real-time Marker Tracking (Open3D)
+### 1. Generate Printable Markers
+
+First, generate ArUco markers to print:
+
+```bash
+# Generate markers 0-3 as individual files
+python scripts/generate_markers.py --id 0 1 2 3
+
+# Generate a sheet with markers for easy printing
+python scripts/generate_markers.py --sheet --id 0 1 2 3 4 5 6 7
+
+# Generate 50mm markers at 300 DPI for accurate physical size
+python scripts/generate_markers.py --size-mm 50 --dpi 300 --id 0 1 2
+
+# List available ArUco dictionaries
+python scripts/generate_markers.py --list-dicts
+```
+
+Output files are saved to `markers/` directory by default.
+
+### 2. Track with Orbbec Camera
+
+Run real marker tracking with an Orbbec RGB-D camera:
+
+```bash
+# Basic tracking with 3D visualization
+python scripts/run_orbbec_tracker.py
+
+# Track 50mm markers (must match printed marker size!)
+python scripts/run_orbbec_tracker.py --marker-size 0.05
+
+# Show camera preview with detections
+python scripts/run_orbbec_tracker.py --preview
+
+# Use specific ArUco dictionary (must match generated markers!)
+python scripts/run_orbbec_tracker.py --dict DICT_4X4_50
+```
+
+Options:
+```
+--marker-size M     Physical marker size in meters (default: 0.05 = 50mm)
+--dict TYPE         ArUco dictionary type (default: DICT_4X4_50)
+--preview           Show camera preview window with detections
+--no-visualization  Disable 3D Open3D visualization
+--camera-config     Path to camera config with extrinsic matrix
+```
+
+### 3. Simulated Tracking (No Camera Required)
+
+Test the system without hardware:
 
 ```bash
 python scripts/run_full_system.py
