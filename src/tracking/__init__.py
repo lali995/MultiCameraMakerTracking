@@ -10,5 +10,14 @@ except ImportError:
     OrbbecArucoTracker = None
     create_orbbec_tracker = None
 
+# Network stream tracker (requires pyzmq)
+try:
+    from .network_stream_tracker import NetworkStreamTracker
+    NETWORK_STREAMING_AVAILABLE = True
+except ImportError:
+    NETWORK_STREAMING_AVAILABLE = False
+    NetworkStreamTracker = None
+
 __all__ = ['TrackerBase', 'SimulatedTracker', 'OrbbecArucoTracker',
-           'create_orbbec_tracker', 'ORBBEC_AVAILABLE']
+           'create_orbbec_tracker', 'ORBBEC_AVAILABLE',
+           'NetworkStreamTracker', 'NETWORK_STREAMING_AVAILABLE']

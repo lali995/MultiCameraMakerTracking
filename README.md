@@ -11,12 +11,14 @@ A real-time ArUco marker tracking and visualization system for multi-camera setu
 - **Real-time marker tracking** with Open3D visualization
 - **ArUco marker generator** for creating printable markers
 - **Orbbec camera integration** for RGB-D marker tracking
+- **Network camera streaming** for remote Orbbec cameras via ZMQ
 - **Marker orientation visualization** with XYZ axes (red=X, green=Y, blue=Z)
 - **Simulated tracker** for testing without camera hardware
 - **Multiple motion patterns**: circular, linear, figure-8, random walk
 - **Pub/sub architecture** ready for ROS migration
 - Camera pose visualization from sensor configuration files
 - Marker trajectory trails with configurable length
+- 60+ FPS network streaming with JPEG compression
 - 30Hz tracking rate for robot navigation
 
 ## Project Structure
@@ -26,12 +28,17 @@ MultiCameraMakerTracking/
 ├── src/
 │   ├── core/           # Message bus, data types, config loader
 │   ├── markers/        # ArUco marker generation
-│   ├── tracking/       # Tracker implementations (simulated, Orbbec)
+│   ├── tracking/       # Tracker implementations (simulated, Orbbec, network)
+│   ├── streaming/      # Network video streaming (ZMQ-based)
 │   └── visualization/  # Open3D viewer and scene management
 ├── scripts/
-│   ├── run_full_system.py    # Simulated tracking demo
-│   ├── run_orbbec_tracker.py # Orbbec camera tracking
-│   └── generate_markers.py   # Generate printable markers
+│   ├── run_full_system.py           # Simulated tracking demo
+│   ├── run_orbbec_tracker.py        # Orbbec camera tracking
+│   ├── run_network_tracker.py       # Network camera tracking
+│   ├── stream_client_standalone.py  # Client to copy to remote machines
+│   └── generate_markers.py          # Generate printable markers
+├── docs/
+│   └── NETWORK_STREAMING.md    # Network streaming documentation
 ├── config/             # Camera configurations
 ├── markers/            # Generated marker images (output)
 ├── main.py             # Legacy Plotly visualization
@@ -44,6 +51,7 @@ MultiCameraMakerTracking/
 - numpy
 - open3d
 - opencv-contrib-python (for ArUco detection)
+- pyzmq (for network streaming)
 - matplotlib (optional, for legacy visualization)
 - plotly (optional, for legacy visualization)
 - pyorbbecsdk (optional, for Orbbec cameras)
@@ -108,7 +116,33 @@ Options:
 --camera-config     Path to camera config with extrinsic matrix
 ```
 
-### 3. Simulated Tracking (No Camera Required)
+### 3. Network Camera Streaming (Remote Orbbec Cameras)
+
+Track markers from cameras on remote machines over the network:
+
+```bash
+# First time: copy the standalone client to remote machine
+scp scripts/stream_client_standalone.py determtech@192.168.1.80:~/stream_client.py
+
+# On remote machine (192.168.1.80) - start the stream client
+python3 stream_client.py --server <YOUR_LOCAL_IP> --camera-id cam1 --start-docker
+
+# On local machine - start the tracker with preview
+DISPLAY=:1 python3 scripts/run_network_tracker.py --preview
+```
+
+**Quick Commands**:
+```bash
+# Stop tracker
+pkill -f run_network_tracker
+
+# Restart tracker
+pkill -f run_network_tracker && sleep 2 && DISPLAY=:1 python3 scripts/run_network_tracker.py --preview
+```
+
+For full setup instructions, see [docs/NETWORK_STREAMING.md](docs/NETWORK_STREAMING.md).
+
+### 4. Simulated Tracking (No Camera Required)
 
 Test the system without hardware:
 

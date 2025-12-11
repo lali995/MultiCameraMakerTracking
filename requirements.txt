@@ -11,3 +11,6 @@ opencv-contrib-python>=4.8.0
 
 # Orbbec camera support (optional - install if using Orbbec cameras)
 # pyorbbecsdk>=1.0.0
+
+# Network streaming support
+pyzmq>=25.0.0
