@@ -42,6 +42,7 @@ Examples:
   python scripts/run_full_system.py
   python scripts/run_full_system.py --num-markers 5 --motion figure8
   python scripts/run_full_system.py --config /path/to/config --speed 2.0
+  python scripts/run_full_system.py --calibration calibration/calibration_result.json --reference 250514
         """
     )
 
@@ -50,6 +51,18 @@ Examples:
         type=str,
         default='config',
         help='Path to config directory (default: config)'
+    )
+    parser.add_argument(
+        '--calibration',
+        type=str,
+        default=None,
+        help='Path to calibration_result.json file (overrides --config)'
+    )
+    parser.add_argument(
+        '--reference',
+        type=str,
+        default=None,
+        help='Camera ID substring to use as reference/origin (e.g., "250514")'
     )
     parser.add_argument(
         '--num-markers',
@@ -91,7 +104,11 @@ def main():
     print("=" * 50)
     print("ArUco Marker Tracking System")
     print("=" * 50)
-    print(f"Config path: {args.config}")
+    if args.calibration:
+        print(f"Calibration file: {args.calibration}")
+        print(f"Reference camera: {args.reference or '250514 (default)'}")
+    else:
+        print(f"Config path: {args.config}")
     print(f"Markers: {args.num_markers}")
     print(f"Motion: {args.motion}")
     print(f"Speed: {args.speed}x")
@@ -104,12 +121,20 @@ def main():
 
     # Load camera configurations
     print("\nLoading camera configurations...")
-    config_loader = ConfigLoader(args.config)
-    camera_poses = config_loader.get_camera_poses()
+    config_loader = ConfigLoader(args.config, reference_camera_id=args.reference)
+
+    if args.calibration:
+        # Load from calibration_result.json with reference camera
+        reference = args.reference or '250514'  # Default reference camera
+        camera_poses = config_loader.load_from_calibration_file(args.calibration, reference)
+    else:
+        # Load from sensor_config.json files in config directory
+        camera_poses = config_loader.get_camera_poses()
+
     print(f"Found {len(camera_poses)} cameras")
 
     for pose in camera_poses:
-        print(f"  - {pose.camera_id}")
+        print(f"  - {pose.camera_id} at position ({pose.position[0]:.3f}, {pose.position[1]:.3f}, {pose.position[2]:.3f})")
 
     # Configure tracker
     tracker_config = {

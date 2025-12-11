@@ -44,7 +44,6 @@ class SceneManager:
 
         # Static scene elements
         self.coordinate_frame = None
-        self.ground_grid = None
 
         # Factory for creating geometries
         self.factory = GeometryFactory()
@@ -62,11 +61,6 @@ class SceneManager:
         self.coordinate_frame = self.factory.create_coordinate_frame(size=0.3)
         if self.coordinate_frame:
             geometries.append(self.coordinate_frame)
-
-        # Ground grid
-        self.ground_grid = self.factory.create_grid(size=2.0, divisions=8, y_level=0.0)
-        if self.ground_grid:
-            geometries.append(self.ground_grid)
 
         return geometries
 
@@ -215,8 +209,6 @@ class SceneManager:
 
         if self.coordinate_frame:
             geometries.append(self.coordinate_frame)
-        if self.ground_grid:
-            geometries.append(self.ground_grid)
 
         geometries.extend(self.camera_geometries.values())
         geometries.extend(self.marker_geometries.values())
