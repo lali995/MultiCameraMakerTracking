@@ -4,7 +4,7 @@ A real-time ArUco marker tracking and visualization system for multi-camera setu
 
 ![Marker Tracking Visualization](docs/screenshots/marker_tracking.png)
 
-*3D visualization showing marker spheres with orientation axes, camera frustums, coordinate frame, and ground grid*
+*3D visualization showing marker spheres with orientation axes, camera frustums, and coordinate frame*
 
 ## Features
 
@@ -12,11 +12,13 @@ A real-time ArUco marker tracking and visualization system for multi-camera setu
 - **ArUco marker generator** for creating printable markers
 - **Orbbec camera integration** for RGB-D marker tracking
 - **Network camera streaming** for remote Orbbec cameras via ZMQ
+- **3D pose estimation** with solvePnP for accurate marker positioning
+- **Calibration file support** for multi-camera setups with reference camera
 - **Marker orientation visualization** with XYZ axes (red=X, green=Y, blue=Z)
 - **Simulated tracker** for testing without camera hardware
 - **Multiple motion patterns**: circular, linear, figure-8, random walk
 - **Pub/sub architecture** ready for ROS migration
-- Camera pose visualization from sensor configuration files
+- Camera pose visualization from calibration or sensor configuration files
 - Marker trajectory trails with configurable length
 - 60+ FPS network streaming with JPEG compression
 - 30Hz tracking rate for robot navigation
@@ -32,14 +34,16 @@ MultiCameraMakerTracking/
 │   ├── streaming/      # Network video streaming (ZMQ-based)
 │   └── visualization/  # Open3D viewer and scene management
 ├── scripts/
-│   ├── run_full_system.py           # Simulated tracking demo
-│   ├── run_orbbec_tracker.py        # Orbbec camera tracking
-│   ├── run_network_tracker.py       # Network camera tracking
-│   ├── stream_client_standalone.py  # Client to copy to remote machines
-│   └── generate_markers.py          # Generate printable markers
+│   ├── run_full_system.py                        # Simulated tracking demo
+│   ├── run_orbbec_tracker.py                     # Orbbec camera tracking
+│   ├── run_network_tracker.py                    # Network camera tracking (2D)
+│   ├── run_network_tracker_with_visualization.py # Network tracking with 3D viz
+│   ├── stream_client_standalone.py               # Client to copy to remote machines
+│   └── generate_markers.py                       # Generate printable markers
 ├── docs/
 │   └── NETWORK_STREAMING.md    # Network streaming documentation
-├── config/             # Camera configurations
+├── calibration/        # Camera calibration files
+├── config/             # Camera configurations (legacy)
 ├── markers/            # Generated marker images (output)
 ├── main.py             # Legacy Plotly visualization
 └── requirements.txt
@@ -131,6 +135,33 @@ python3 stream_client.py --server <YOUR_LOCAL_IP> --camera-id cam1 --start-docke
 DISPLAY=:1 python3 scripts/run_network_tracker.py --preview
 ```
 
+#### Network Tracking with 3D Visualization
+
+For full 3D visualization with pose estimation and video preview:
+
+```bash
+# Run with calibration file, video preview, and 3D visualization
+DISPLAY=:1 python3 scripts/run_network_tracker_with_visualization.py \
+    --calibration calibration/calibration_result.json \
+    --reference 250514 \
+    --camera-filter cam \
+    --preview
+```
+
+Options:
+```
+--calibration PATH  Path to calibration_result.json with camera extrinsics
+--reference ID      Camera ID substring to use as origin (default: 250514)
+--camera-filter ID  Only process cameras with this substring in ID
+--marker-size M     Physical marker size in meters (default: 0.05)
+--preview           Show video preview window with pose overlay
+--no-visualization  Disable 3D visualization (console output only)
+```
+
+This shows:
+- **Video Preview**: Live camera feed with marker detection, pose axes, and 3D position
+- **3D Visualization**: Open3D window with camera frustums, markers, and trajectories
+
 **Quick Commands**:
 ```bash
 # Stop tracker
@@ -153,6 +184,8 @@ python scripts/run_full_system.py
 Options:
 ```
 --config PATH       Path to config directory (default: config)
+--calibration PATH  Path to calibration_result.json (overrides --config)
+--reference ID      Camera ID substring to use as origin (e.g., "250514")
 --num-markers N     Number of simulated markers (default: 3)
 --motion TYPE       Motion type: circular, linear, figure8, random (default: circular)
 --no-trajectory     Disable marker trails
@@ -167,6 +200,9 @@ python scripts/run_full_system.py --num-markers 5 --motion figure8
 
 # Fast random motion without trails
 python scripts/run_full_system.py --motion random --speed 2.0 --no-trajectory
+
+# Use calibration file with reference camera as origin
+python scripts/run_full_system.py --calibration calibration/calibration_result.json --reference 250514
 ```
 
 ### Keyboard Controls
@@ -188,6 +224,31 @@ python main.py
 Opens an interactive 3D view in your browser.
 
 ## Configuration
+
+### Calibration File (Recommended)
+
+Place a `calibration_result.json` file in the `calibration/` directory:
+
+```json
+{
+    "CalibrationTime": "2025-12-11 16:41:22",
+    "NumberOfCalibratedCameras": 3,
+    "CalibratedCameras": [
+        {
+            "CameraIndex": 0,
+            "CameraID": "SZVIDS-250515-EAA839-91E21B-292366",
+            "CameraType": "Orbbec",
+            "CameraExtrinsic": "-0.98, 0.19, -0.02, -1.42, 0.04, 0.08, -1.0, 3.7, ..."
+        }
+    ]
+}
+```
+
+The `CameraExtrinsic` field contains 16 comma-separated values representing a 4x4 transformation matrix.
+
+Use with `--calibration` and `--reference` flags to specify a reference camera as the world origin.
+
+### Legacy Configuration
 
 Place camera configuration folders in the `config/` directory:
 
