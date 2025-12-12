@@ -1,19 +1,65 @@
 #!/usr/bin/env python3
 """
-Multi-Camera ArUco Marker Tracking with 3D Visualization.
+Multi-Camera ArUco Marker Tracking Server with 3D Visualization.
 
-Tracks markers across multiple cameras simultaneously, fuses observations
-from multiple viewpoints for better accuracy, and visualizes which cameras
-are detecting each marker.
+This is the SERVER component for multi-camera ArUco marker tracking.
+It receives video streams from remote cameras via ZMQ, detects ArUco markers,
+fuses pose observations from multiple viewpoints, and provides real-time
+3D visualization.
+
+Architecture:
+    Remote Cameras (stream_client_standalone.py)
+           |
+           | ZMQ PUSH/PULL (TCP)
+           v
+    This Server (run_multi_camera_tracker.py)
+           |
+           +-> ArUco Detection (per camera)
+           +-> Pose Fusion (weighted average, median, or least squares)
+           +-> 3D Visualization (Open3D)
+
+Features:
+    - Receives video streams from multiple remote cameras via ZMQ
+    - Detects ArUco markers in each camera feed independently
+    - Fuses marker poses from multiple viewpoints for improved accuracy
+    - Real-time 3D visualization with camera frustums and detection lines
+    - Integrated viewer shows both 3D scene and camera feed thumbnails
+    - Console output mode for headless operation
+
+Requirements:
+    pip install opencv-python pyzmq numpy open3d scipy
 
 Usage:
+    # Basic usage (requires calibration file)
     python scripts/run_multi_camera_tracker.py --calibration calibration/calibration_result.json
 
-    # With specific reference camera
-    python scripts/run_multi_camera_tracker.py --calibration calibration/calibration_result.json --reference 250514
+    # With specific reference camera (coordinate origin)
+    python scripts/run_multi_camera_tracker.py -c calibration/calibration_result.json --reference 250514
 
-    # With video preview grid
-    python scripts/run_multi_camera_tracker.py --calibration calibration/calibration_result.json --preview
+    # With integrated camera preview panel (recommended)
+    python scripts/run_multi_camera_tracker.py -c calibration/calibration_result.json --preview
+
+    # Headless mode (console output only, no visualization)
+    python scripts/run_multi_camera_tracker.py -c calibration/calibration_result.json --no-visualization
+
+    # Custom marker size and fusion method
+    python scripts/run_multi_camera_tracker.py -c calibration/calibration_result.json \\
+        --marker-size 0.10 --fusion least_squares
+
+Network Setup:
+    1. Start this server on a machine accessible to all cameras
+    2. Note the server's IP address
+    3. Start stream_client_standalone.py on each camera machine:
+       python stream_client_standalone.py -s <server_ip> -c <camera_id>
+
+    The camera_id should match or partially match the CameraID in the
+    calibration file for proper pose fusion.
+
+Controls (3D Viewer):
+    - Mouse drag: Rotate view
+    - Scroll: Zoom
+    - Q: Quit
+    - Menu > View > Reset View: Reset camera position
 """
 
 import os
