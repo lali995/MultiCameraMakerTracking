@@ -8,13 +8,17 @@ A real-time ArUco marker tracking and visualization system for multi-camera setu
 
 ## Features
 
-- **Real-time marker tracking** with Open3D visualization
+- **Multi-camera marker tracking** with pose fusion from multiple viewpoints
+- **Real-time 3D visualization** with Open3D showing markers, camera frustums, and detection lines
 - **ArUco marker generator** for creating printable markers
 - **Orbbec camera integration** for RGB-D marker tracking
 - **Network camera streaming** for remote Orbbec cameras via ZMQ
 - **3D pose estimation** with solvePnP for accurate marker positioning
+- **Pose fusion algorithms**: weighted average, median, or least squares
 - **Calibration file support** for multi-camera setups with reference camera
 - **Marker orientation visualization** with XYZ axes (red=X, green=Y, blue=Z)
+- **Detection line visualization** showing which cameras see each marker
+- **Integrated viewer** with 3D visualization and camera status panel
 - **Simulated tracker** for testing without camera hardware
 - **Multiple motion patterns**: circular, linear, figure-8, random walk
 - **Pub/sub architecture** ready for ROS migration
@@ -30,14 +34,25 @@ MultiCameraMakerTracking/
 ├── src/
 │   ├── core/           # Message bus, data types, config loader
 │   ├── markers/        # ArUco marker generation
-│   ├── tracking/       # Tracker implementations (simulated, Orbbec, network)
+│   ├── tracking/       # Tracker implementations
+│   │   ├── simulated_tracker.py      # Simulated markers for testing
+│   │   ├── orbbec_tracker.py         # Single Orbbec camera tracking
+│   │   ├── network_tracker.py        # Network camera tracking
+│   │   ├── multi_camera_tracker.py   # Multi-camera with fusion
+│   │   └── pose_fusion.py            # Pose fusion algorithms
 │   ├── streaming/      # Network video streaming (ZMQ-based)
 │   └── visualization/  # Open3D viewer and scene management
+│       ├── viewer.py                 # Main 3D viewer
+│       ├── scene_manager.py          # Scene geometry management
+│       ├── integrated_viewer.py      # 3D + camera status panel
+│       └── multi_camera_preview.py   # Camera grid preview
 ├── scripts/
 │   ├── run_full_system.py                        # Simulated tracking demo
 │   ├── run_orbbec_tracker.py                     # Orbbec camera tracking
 │   ├── run_network_tracker.py                    # Network camera tracking (2D)
 │   ├── run_network_tracker_with_visualization.py # Network tracking with 3D viz
+│   ├── run_multi_camera_tracker.py               # Multi-camera fusion tracking
+│   ├── run_camera_preview.py                     # Standalone camera preview
 │   ├── stream_client_standalone.py               # Client to copy to remote machines
 │   └── generate_markers.py                       # Generate printable markers
 ├── docs/
@@ -173,7 +188,117 @@ pkill -f run_network_tracker && sleep 2 && DISPLAY=:1 python3 scripts/run_networ
 
 For full setup instructions, see [docs/NETWORK_STREAMING.md](docs/NETWORK_STREAMING.md).
 
-### 4. Simulated Tracking (No Camera Required)
+### 4. Multi-Camera Tracking with Pose Fusion
+
+Track markers across multiple cameras simultaneously with pose fusion for improved accuracy:
+
+```bash
+# Start stream clients on each camera (on remote machines)
+python stream_client.py --server 192.168.1.195 --camera-id SZVIDS-250515-...
+python stream_client.py --server 192.168.1.195 --camera-id SZVIDS-250513-...
+python stream_client.py --server 192.168.1.195 --camera-id SZVIDS-250514-...
+
+# Run multi-camera tracker with 3D visualization
+DISPLAY=:1 python3 scripts/run_multi_camera_tracker.py \
+    --calibration calibration/calibration_result.json \
+    --reference 250514
+
+# With integrated viewer (3D + camera status panel)
+DISPLAY=:1 python3 scripts/run_multi_camera_tracker.py \
+    --calibration calibration/calibration_result.json \
+    --reference 250514 \
+    --preview
+```
+
+Options:
+```
+--calibration PATH  Path to calibration_result.json (required)
+--reference ID      Camera ID substring for coordinate origin (default: 250514)
+--marker-size M     Physical marker size in meters (default: 0.05)
+--dict TYPE         ArUco dictionary (DICT_4X4_50, DICT_4X4_100, etc.)
+--fusion METHOD     Pose fusion method (default: weighted_average)
+                    - weighted_average: Weight by confidence and inverse depth
+                    - median: Take median position (outlier rejection)
+                    - least_squares: Minimize reprojection error
+--preview           Show integrated viewer with camera status panel
+--no-visualization  Console output only (no 3D visualization)
+--port PORT         Stream server port (default: 5555)
+```
+
+#### Pose Fusion Methods
+
+| Method | Description | Best For |
+|--------|-------------|----------|
+| `weighted_average` | Weights detections by confidence and camera distance | General use |
+| `median` | Takes median of all positions | Outlier rejection |
+| `least_squares` | Minimizes reprojection error across all cameras | High accuracy |
+
+#### Visualization Features
+
+- **Detection lines**: Colored lines from marker to each detecting camera
+- **Camera frustums**: 3D representation of camera poses and field of view
+- **Marker spheres**: Position indicators with unique colors per marker
+- **Orientation axes**: XYZ axes showing marker heading (red=X, green=Y, blue=Z)
+- **Trajectory trails**: Movement history (toggle with 'T' key)
+
+#### Quick Commands (Multi-Camera System)
+
+**Server (tracking machine):**
+```bash
+# Start tracker with 3D visualization and camera feeds
+DISPLAY=:1 python3 scripts/run_multi_camera_tracker.py \
+    --calibration calibration/calibration_result.json \
+    --reference 250514 \
+    --preview
+
+# Stop tracker
+pkill -f run_multi_camera_tracker
+
+# Force stop if stuck (kills all Python processes related to tracker)
+pkill -9 -f run_multi_camera_tracker
+
+# Restart tracker
+pkill -f run_multi_camera_tracker && sleep 2 && \
+    DISPLAY=:1 python3 scripts/run_multi_camera_tracker.py \
+    --calibration calibration/calibration_result.json \
+    --reference 250514 --preview
+```
+
+**Client (camera machines):**
+```bash
+# Start stream client (run on each camera machine)
+python3 stream_client.py --server <SERVER_IP> --camera-id <CAMERA_ID>
+
+# Example with Docker auto-start
+python3 stream_client.py --server 192.168.1.195 --camera-id SZVIDS-250514-... --start-docker
+
+# Stop stream client
+pkill -f stream_client
+
+# Force stop if stuck
+pkill -9 -f stream_client
+
+# Restart stream client
+pkill -f stream_client && sleep 2 && \
+    python3 stream_client.py --server <SERVER_IP> --camera-id <CAMERA_ID>
+```
+
+**Troubleshooting:**
+```bash
+# Check if tracker is running
+ps aux | grep run_multi_camera_tracker
+
+# Check if port 5555 is in use
+lsof -i :5555
+
+# Kill process using port 5555
+fuser -k 5555/tcp
+
+# View connected cameras (from tracker output)
+# Look for "Connected cameras" lines in tracker output
+```
+
+### 5. Simulated Tracking (No Camera Required)
 
 Test the system without hardware:
 
@@ -267,11 +392,48 @@ Each `sensor_config.json` must contain a `Sensor to World Extrinsic` 4x4 transfo
 
 The system uses a pub/sub message bus pattern designed for ROS compatibility:
 
+### Single Camera Mode
 ```
-SimulatedTracker (30Hz) --> MessageBus --> MarkerViewer (60Hz render)
-        |                  /markers/poses         |
-   Publishes MarkerPose    <--    Subscribes & updates visualization
-   (position + orientation)       (spheres + XYZ axes + trails)
+Tracker (30Hz) -----> MessageBus -----> MarkerViewer (60Hz)
+                   /markers/poses
+```
+
+### Multi-Camera Mode with Pose Fusion
+```
+┌─────────────┐  ┌─────────────┐  ┌─────────────┐
+│  Camera 1   │  │  Camera 2   │  │  Camera 3   │
+│ (streaming) │  │ (streaming) │  │ (streaming) │
+└──────┬──────┘  └──────┬──────┘  └──────┬──────┘
+       │                │                │
+       └────────────────┼────────────────┘
+                        ▼
+              ┌─────────────────┐
+              │  StreamServer   │
+              │ (receives all)  │
+              └────────┬────────┘
+                       ▼
+              ┌─────────────────┐
+              │MultiCameraTracker│
+              │ - Per-cam detect │
+              │ - Detection sync │
+              └────────┬────────┘
+                       ▼
+              ┌─────────────────┐
+              │   PoseFusion    │
+              │ - Weighted avg  │
+              │ - Multi-view    │
+              └────────┬────────┘
+                       ▼
+              ┌─────────────────┐
+              │   MessageBus    │
+              │/markers/fused   │
+              └────────┬────────┘
+                       ▼
+              ┌─────────────────┐
+              │  MarkerViewer   │
+              │ - 3D marker pos │
+              │ - Detection lines│
+              └─────────────────┘
 ```
 
 ### Marker Visualization

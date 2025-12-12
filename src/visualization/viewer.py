@@ -2,7 +2,7 @@
 Real-time Open3D viewer for marker tracking visualization.
 """
 import numpy as np
-from typing import List, Dict, Optional, Callable
+from typing import List, Dict, Optional, Callable, Tuple
 import threading
 
 try:
@@ -13,7 +13,7 @@ except ImportError:
     print("Warning: Open3D not installed. Install with: pip install open3d")
 
 from ..core.message_bus import MessageBus
-from ..core.data_types import CameraPose, MarkerPose, TrackerStatus
+from ..core.data_types import CameraPose, MarkerPose, TrackerStatus, FusedMarkerPose
 from ..core.timing import RateController, FPSCounter
 from .scene_manager import SceneManager
 from .geometry_factory import GeometryFactory
@@ -75,6 +75,7 @@ class MarkerViewer:
 
         # Pending updates from message bus (thread-safe)
         self._pending_markers: Dict[int, MarkerPose] = {}
+        self._pending_fused: Dict[int, FusedMarkerPose] = {}
         self._pending_lock = threading.Lock()
 
         # Track which geometries have been added
@@ -85,6 +86,10 @@ class MarkerViewer:
         # FPS tracking
         self._fps_counter = FPSCounter()
         self._tracker_fps = 0.0
+
+        # Multi-camera tracking
+        self._show_detection_lines = True
+        self._camera_poses: List[CameraPose] = []
 
     def setup(self, camera_poses: List[CameraPose]) -> None:
         """
@@ -114,8 +119,13 @@ class MarkerViewer:
         for geom in camera_geoms:
             self.vis.add_geometry(geom)
 
-        # Subscribe to marker poses
+        # Cache camera poses for detection line visualization
+        self._camera_poses = camera_poses
+        self.scene.setup_camera_colors(camera_poses)
+
+        # Subscribe to marker poses (both legacy and fused)
         self.bus.subscribe('/markers/poses', self._on_marker_pose)
+        self.bus.subscribe('/markers/fused_poses', self._on_fused_pose)
         self.bus.subscribe('/tracker/status', self._on_tracker_status)
 
         # Set up camera view
@@ -182,6 +192,11 @@ class MarkerViewer:
         with self._pending_lock:
             self._pending_markers[pose.marker_id] = pose
 
+    def _on_fused_pose(self, pose: FusedMarkerPose) -> None:
+        """Callback when a fused marker pose is received."""
+        with self._pending_lock:
+            self._pending_fused[pose.marker_id] = pose
+
     def _on_tracker_status(self, status: TrackerStatus) -> None:
         """Callback when tracker status is received."""
         self._tracker_fps = status.fps
@@ -190,43 +205,81 @@ class MarkerViewer:
         """Process pending marker updates and update scene."""
         with self._pending_lock:
             markers_to_process = dict(self._pending_markers)
+            fused_to_process = dict(self._pending_fused)
             self._pending_markers.clear()
+            self._pending_fused.clear()
 
+        # Process fused poses first (they have multi-camera info)
+        for marker_id, pose in fused_to_process.items():
+            position = np.array([pose.x, pose.y, pose.z])
+            orientation = pose.orientation
+            detecting_cameras = pose.detecting_cameras if hasattr(pose, 'detecting_cameras') else []
+
+            self._update_marker_geometry(marker_id, position, orientation)
+
+            # Update detection lines for multi-camera visualization
+            if self._show_detection_lines and detecting_cameras:
+                new_lines, updated_lines, stale_lines = self.scene.update_detection_lines(
+                    marker_id, position, detecting_cameras
+                )
+
+                # Add new detection lines
+                for line in new_lines:
+                    self.vis.add_geometry(line, reset_bounding_box=False)
+
+                # Update existing lines
+                for line in updated_lines:
+                    self.vis.update_geometry(line)
+
+                # Remove stale lines
+                for line in stale_lines:
+                    self.vis.remove_geometry(line, reset_bounding_box=False)
+
+        # Process regular poses (single camera, backwards compatibility)
         for marker_id, pose in markers_to_process.items():
+            # Skip if already processed as fused pose
+            if marker_id in fused_to_process:
+                continue
+
             position = np.array([pose.x, pose.y, pose.z])
             orientation = pose.orientation
 
-            # Check if marker geometry exists
-            if marker_id not in self._added_marker_ids:
-                # Create and add new marker sphere
-                self.scene.get_or_create_marker(marker_id)
-                sphere = self.scene.marker_geometries.get(marker_id)
-                if sphere:
-                    sphere.translate(position)
-                    self.vis.add_geometry(sphere, reset_bounding_box=False)
-                    self._added_marker_ids.add(marker_id)
+            self._update_marker_geometry(marker_id, position, orientation)
 
-            # Check if marker axes exist
-            if marker_id not in self._added_axes_ids:
-                # Create and add marker axes
-                axes = self.scene.get_or_create_marker_axes(marker_id, position, orientation)
-                if axes:
-                    self.vis.add_geometry(axes, reset_bounding_box=False)
-                    self._added_axes_ids.add(marker_id)
+    def _update_marker_geometry(self, marker_id: int, position: np.ndarray,
+                                 orientation: Optional[tuple]) -> None:
+        """Update marker geometry (sphere, axes, trajectory)."""
+        # Check if marker geometry exists
+        if marker_id not in self._added_marker_ids:
+            # Create and add new marker sphere
+            self.scene.get_or_create_marker(marker_id)
+            sphere = self.scene.marker_geometries.get(marker_id)
+            if sphere:
+                sphere.translate(position)
+                self.vis.add_geometry(sphere, reset_bounding_box=False)
+                self._added_marker_ids.add(marker_id)
 
-            # Update position and orientation
-            new_trajectory = self.scene.update_marker_position(marker_id, position, orientation)
+        # Check if marker axes exist
+        if marker_id not in self._added_axes_ids:
+            # Create and add marker axes
+            axes = self.scene.get_or_create_marker_axes(marker_id, position, orientation)
+            if axes:
+                self.vis.add_geometry(axes, reset_bounding_box=False)
+                self._added_axes_ids.add(marker_id)
 
-            # Update trajectory geometry
-            if self._show_trajectory and new_trajectory is not None:
-                # Remove old trajectory
-                old_traj = self._current_trajectory_geometries.get(marker_id)
-                if old_traj:
-                    self.vis.remove_geometry(old_traj, reset_bounding_box=False)
+        # Update position and orientation
+        new_trajectory = self.scene.update_marker_position(marker_id, position, orientation)
 
-                # Add new trajectory
-                self.vis.add_geometry(new_trajectory, reset_bounding_box=False)
-                self._current_trajectory_geometries[marker_id] = new_trajectory
+        # Update trajectory geometry
+        if self._show_trajectory and new_trajectory is not None:
+            # Remove old trajectory
+            old_traj = self._current_trajectory_geometries.get(marker_id)
+            if old_traj:
+                self.vis.remove_geometry(old_traj, reset_bounding_box=False)
+
+            # Add new trajectory
+            self.vis.add_geometry(new_trajectory, reset_bounding_box=False)
+            self._current_trajectory_geometries[marker_id] = new_trajectory
 
     def run(self) -> None:
         """
@@ -281,3 +334,45 @@ class MarkerViewer:
     def stop(self) -> None:
         """Stop the viewer."""
         self._running = False
+
+    def step(self) -> bool:
+        """
+        Process one frame of the visualization (non-blocking).
+
+        Returns:
+            True if viewer is still running, False if it should stop
+        """
+        if not self._running:
+            return False
+
+        # Process message bus callbacks
+        self.bus.spin_once()
+
+        # Update marker positions (unless paused)
+        if not self._paused:
+            self._process_marker_updates()
+
+        # Update Open3D - update each marker geometry individually
+        for marker_id in self._added_marker_ids:
+            geom = self.scene.marker_geometries.get(marker_id)
+            if geom:
+                self.vis.update_geometry(geom)
+
+        # Update axes geometries
+        for marker_id in self._added_axes_ids:
+            axes = self.scene.marker_axes.get(marker_id)
+            if axes:
+                self.vis.update_geometry(axes)
+
+        self.vis.poll_events()
+        self.vis.update_renderer()
+
+        # Update FPS
+        self._fps_counter.tick()
+
+        return self._running
+
+    def cleanup(self) -> None:
+        """Destroy the viewer window."""
+        if self.vis:
+            self.vis.destroy_window()

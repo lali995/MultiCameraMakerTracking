@@ -1,5 +1,7 @@
 from .tracker_base import TrackerBase
 from .simulated_tracker import SimulatedTracker
+from .pose_fusion import PoseFusion
+from .multi_camera_tracker import MultiCameraTracker, CameraConfig
 
 # Orbbec tracker is optional (requires pyorbbecsdk)
 try:
@@ -20,4 +22,5 @@ except ImportError:
 
 __all__ = ['TrackerBase', 'SimulatedTracker', 'OrbbecArucoTracker',
            'create_orbbec_tracker', 'ORBBEC_AVAILABLE',
-           'NetworkStreamTracker', 'NETWORK_STREAMING_AVAILABLE']
+           'NetworkStreamTracker', 'NETWORK_STREAMING_AVAILABLE',
+           'PoseFusion', 'MultiCameraTracker', 'CameraConfig']

@@ -11,8 +11,18 @@ try:
 except ImportError:
     HAS_OPEN3D = False
 
-from ..core.data_types import CameraPose, MarkerPose
+from ..core.data_types import CameraPose, MarkerPose, FusedMarkerPose
 from .geometry_factory import GeometryFactory, MARKER_COLORS
+
+# Camera colors for detection lines
+CAMERA_COLORS = [
+    [1.0, 0.3, 0.3],  # Red
+    [0.3, 1.0, 0.3],  # Green
+    [0.3, 0.3, 1.0],  # Blue
+    [1.0, 1.0, 0.3],  # Yellow
+    [1.0, 0.3, 1.0],  # Magenta
+    [0.3, 1.0, 1.0],  # Cyan
+]
 
 
 class SceneManager:
@@ -47,6 +57,14 @@ class SceneManager:
 
         # Factory for creating geometries
         self.factory = GeometryFactory()
+
+        # Multi-camera detection visualization
+        # Key: (marker_id, camera_id), Value: LineSet connecting marker to camera
+        self.detection_lines: Dict[tuple, 'o3d.geometry.LineSet'] = {}
+        # Camera colors for detection lines
+        self.camera_colors: Dict[str, List[float]] = {}
+        # Camera positions cache
+        self.camera_positions: Dict[str, np.ndarray] = {}
 
     def setup_static_scene(self) -> List:
         """
@@ -227,3 +245,133 @@ class SceneManager:
         for points in self.trajectory_points.values():
             points.clear()
         self.trajectory_geometries.clear()
+
+    # ===== Multi-Camera Detection Visualization =====
+
+    def setup_camera_colors(self, camera_poses: List[CameraPose]) -> None:
+        """
+        Assign distinct colors to each camera and cache positions.
+
+        Args:
+            camera_poses: List of camera poses
+        """
+        for i, pose in enumerate(camera_poses):
+            self.camera_colors[pose.camera_id] = CAMERA_COLORS[i % len(CAMERA_COLORS)]
+            self.camera_positions[pose.camera_id] = pose.position.copy()
+
+    def get_camera_color(self, camera_id: str) -> List[float]:
+        """Get color assigned to a camera."""
+        # Try exact match first
+        if camera_id in self.camera_colors:
+            return self.camera_colors[camera_id]
+
+        # Try partial match
+        for cid, color in self.camera_colors.items():
+            if cid in camera_id or camera_id in cid:
+                return color
+
+        return [0.5, 0.5, 0.5]  # Default gray
+
+    def get_camera_position(self, camera_id: str) -> Optional[np.ndarray]:
+        """Get cached position for a camera."""
+        # Try exact match first
+        if camera_id in self.camera_positions:
+            return self.camera_positions[camera_id]
+
+        # Try partial match
+        for cid, pos in self.camera_positions.items():
+            if cid in camera_id or camera_id in cid:
+                return pos
+
+        return None
+
+    def update_detection_lines(
+        self,
+        marker_id: int,
+        marker_position: np.ndarray,
+        detecting_cameras: List[str]
+    ) -> tuple:
+        """
+        Update detection lines from marker to detecting cameras.
+
+        Args:
+            marker_id: Marker ID
+            marker_position: Current marker position
+            detecting_cameras: List of camera IDs currently detecting the marker
+
+        Returns:
+            Tuple of (new_lines, updated_lines, stale_lines) for visualizer updates
+        """
+        if not HAS_OPEN3D:
+            return [], [], []
+
+        new_lines = []
+        updated_lines = []
+        stale_lines = []
+        active_keys = set()
+
+        # Create/update lines for detecting cameras
+        for camera_id in detecting_cameras:
+            cam_pos = self.get_camera_position(camera_id)
+            if cam_pos is None:
+                continue
+
+            key = (marker_id, camera_id)
+            active_keys.add(key)
+            color = self.get_camera_color(camera_id)
+
+            if key in self.detection_lines:
+                # Update existing line
+                line = self.detection_lines[key]
+                line.points = o3d.utility.Vector3dVector([marker_position, cam_pos])
+                updated_lines.append(line)
+            else:
+                # Create new line
+                line = o3d.geometry.LineSet()
+                line.points = o3d.utility.Vector3dVector([marker_position, cam_pos])
+                line.lines = o3d.utility.Vector2iVector([[0, 1]])
+                line.colors = o3d.utility.Vector3dVector([color])
+                self.detection_lines[key] = line
+                new_lines.append(line)
+
+        # Find stale lines (marker no longer detected by these cameras)
+        for key in list(self.detection_lines.keys()):
+            mid, cid = key
+            if mid == marker_id and key not in active_keys:
+                stale_lines.append(self.detection_lines[key])
+                del self.detection_lines[key]
+
+        return new_lines, updated_lines, stale_lines
+
+    def clear_detection_lines_for_marker(self, marker_id: int) -> List:
+        """
+        Clear all detection lines for a specific marker.
+
+        Args:
+            marker_id: Marker ID
+
+        Returns:
+            List of removed line geometries
+        """
+        removed = []
+        for key in list(self.detection_lines.keys()):
+            mid, cid = key
+            if mid == marker_id:
+                removed.append(self.detection_lines[key])
+                del self.detection_lines[key]
+        return removed
+
+    def clear_all_detection_lines(self) -> List:
+        """
+        Clear all detection lines.
+
+        Returns:
+            List of removed line geometries
+        """
+        removed = list(self.detection_lines.values())
+        self.detection_lines.clear()
+        return removed
+
+    def get_detection_line_geometries(self) -> List:
+        """Return all detection line geometries."""
+        return list(self.detection_lines.values())
