@@ -34,7 +34,6 @@ from src.core.config_loader import ConfigLoader
 from src.core.data_types import CameraPose, FusedMarkerPose
 from src.tracking.multi_camera_tracker import MultiCameraTracker, CameraConfig
 from src.visualization.viewer import MarkerViewer
-from src.visualization.multi_camera_preview import MultiCameraPreview
 from src.visualization.integrated_viewer import IntegratedViewer
 
 
@@ -224,62 +223,17 @@ def main():
     print("  python stream_client.py --server <this_ip> --camera-id <camera_id>")
     print("\nControls: Q=quit, P=pause, R=reset view, C=clear trails, T=toggle trails")
 
-    # Preview setup
-    preview = None
-    preview_running = True
-
-    def run_preview_update():
-        """Update preview with latest frames and detections."""
-        nonlocal preview_running
-        while preview_running and tracker._running and preview.is_running():
-            # Get latest frames and detections from tracker
-            frames = tracker.get_latest_frames()
-            detections = tracker.get_latest_detections()
-
-            # Update preview with each camera's data
-            for cam_id in frames:
-                dets = detections.get(cam_id, [])
-                preview.update_frame(cam_id, frames[cam_id], dets)
-
-            time.sleep(0.03)  # ~30 FPS update rate
-
-    def on_fused_pose(pose):
-        """Callback for fused pose updates."""
-        if preview:
-            preview.update_fused_detections(pose.marker_id, pose.detecting_cameras)
-
     try:
         # Start tracker
         tracker.start()
 
-        # Start preview if requested
-        update_thread = None
-        if args.preview:
-            camera_ids = [p.camera_id for p in camera_poses]
-            preview = MultiCameraPreview(
-                camera_ids=camera_ids,
-                window_name="Multi-Camera Detection Preview",
-                cell_size=(480, 270),
-                cols=2 if len(camera_ids) <= 4 else 3
-            )
-            preview.start()
-
-            # Start update thread
-            update_thread = threading.Thread(target=run_preview_update, daemon=True)
-            update_thread.start()
-
-            # Subscribe to fused poses for preview updates
-            message_bus.subscribe('/markers/fused_poses', on_fused_pose)
-
-            print("Enhanced multi-camera preview started")
-
         if args.no_visualization:
             # Console output only
             print("\nRunning without visualization. Press Ctrl+C to stop.")
-            while tracker._running and preview_running:
+            while tracker._running:
                 time.sleep(0.1)
         elif args.preview:
-            # Integrated viewer with camera feeds in side panel
+            # Integrated viewer with camera feeds in side panel (no separate OpenCV window)
             print("\nStarting integrated 3D visualization with camera feeds...")
             integrated_viewer = IntegratedViewer(
                 message_bus=message_bus,
@@ -303,10 +257,6 @@ def main():
     except KeyboardInterrupt:
         print("\nInterrupted")
     finally:
-        preview_running = False
-        if preview:
-            preview._running = False
-            preview.stop()
         tracker.stop()
         server.cleanup()
         time.sleep(0.5)

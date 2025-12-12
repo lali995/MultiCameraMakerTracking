@@ -2,7 +2,7 @@
 Integrated Open3D viewer with embedded camera feeds.
 
 Uses Open3D's GUI module to show both 3D visualization and camera feeds
-in a single window, avoiding OpenCV/Open3D conflicts.
+in a single window, using proper callback-based updates.
 """
 
 import numpy as np
@@ -43,7 +43,7 @@ class IntegratedViewer:
     Open3D GUI viewer with integrated camera preview panels.
 
     Shows 3D marker visualization with camera feed thumbnails
-    in a side panel.
+    in a side panel. Uses callback-based updates for responsiveness.
     """
 
     MENU_QUIT = 1
@@ -81,13 +81,16 @@ class IntegratedViewer:
         # Scene
         self.scene = SceneManager(show_trajectory=True)
         self._marker_materials: Dict[int, rendering.MaterialRecord] = {}
+        self._added_markers: set = set()
+        self._added_lines: set = set()
 
-        # Pending updates
+        # Pending updates (thread-safe)
         self._pending_fused: Dict[int, FusedMarkerPose] = {}
         self._pending_lock = threading.Lock()
 
-        # Frame update
-        self._frame_images: Dict[str, o3d.geometry.Image] = {}
+        # Timing for updates
+        self._last_image_update = 0
+        self._last_marker_update = 0
 
     def setup(self, camera_poses: List[CameraPose]) -> None:
         """Set up the viewer with camera poses."""
@@ -152,15 +155,11 @@ class IntegratedViewer:
             self._detection_labels[pose.camera_id] = det_label
             self.camera_panel.add_child(det_label)
 
-            # Placeholder image (RGBA format for compatibility)
-            placeholder = np.zeros((90, 160, 4), dtype=np.uint8)
-            placeholder[:, :, :3] = [40, 40, 40]  # BGR
-            placeholder[:, :, 3] = 255  # Alpha
-            # Draw camera name on placeholder
+            # Placeholder image (RGB format)
+            placeholder = np.zeros((90, 160, 3), dtype=np.uint8)
+            placeholder[:] = [40, 40, 40]
             cv2.putText(placeholder, short_id, (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (100, 100, 100), 1)
-            rgba_placeholder = cv2.cvtColor(placeholder[:, :, :3], cv2.COLOR_BGR2RGB)
-            rgba_placeholder = np.dstack([rgba_placeholder, placeholder[:, :, 3]])
-            img = o3d.geometry.Image(np.ascontiguousarray(rgba_placeholder))
+            img = o3d.geometry.Image(np.ascontiguousarray(placeholder))
             img_widget = gui.ImageWidget(img)
             self.image_widgets[pose.camera_id] = img_widget
             self.camera_panel.add_child(img_widget)
@@ -227,34 +226,6 @@ class IntegratedViewer:
             [0, 1, 0]  # Up vector
         )
 
-    def _create_grid(self, size=5.0, divisions=20):
-        """Create a ground plane grid."""
-        lines = []
-        points = []
-        step = size / divisions
-        half = size / 2
-
-        idx = 0
-        for i in range(divisions + 1):
-            x = -half + i * step
-            # Line along Z
-            points.append([x, 0, -half])
-            points.append([x, 0, half])
-            lines.append([idx, idx + 1])
-            idx += 2
-
-            # Line along X
-            points.append([-half, 0, x])
-            points.append([half, 0, x])
-            lines.append([idx, idx + 1])
-            idx += 2
-
-        grid = o3d.geometry.LineSet()
-        grid.points = o3d.utility.Vector3dVector(points)
-        grid.lines = o3d.utility.Vector2iVector(lines)
-        grid.colors = o3d.utility.Vector3dVector([[0.3, 0.3, 0.3]] * len(lines))
-        return grid
-
     def _add_camera_to_scene(self, pose: CameraPose):
         """Add a camera frustum to the scene."""
         color = self._camera_colors.get(pose.camera_id, [1, 1, 1])
@@ -320,19 +291,17 @@ class IntegratedViewer:
             # Find matching frame - try both directions for ID matching
             frame = None
             dets = []
-            matched_fid = None
             for fid, f in frames.items():
                 # Check if either ID contains the other (partial match)
                 if cam_id in fid or fid in cam_id:
                     frame = f
-                    matched_fid = fid
                     dets = detections.get(fid, [])
                     break
 
             # Update status label
             if cam_id in self._status_labels:
                 if frame is not None:
-                    self._status_labels[cam_id].text = "  Status: Connected ✓"
+                    self._status_labels[cam_id].text = "  Status: Connected"
                     self._status_labels[cam_id].text_color = gui.Color(0.3, 1.0, 0.3)
                 else:
                     self._status_labels[cam_id].text = "  Status: No signal"
@@ -348,58 +317,39 @@ class IntegratedViewer:
                     self._detection_labels[cam_id].text_color = gui.Color(0.5, 0.5, 0.5)
 
             if frame is not None and cam_id in self.image_widgets:
-                # Resize frame for thumbnail
-                h, w = frame.shape[:2]
-                target_w, target_h = 160, 90
-                scale = min(target_w / w, target_h / h)
-                new_w, new_h = int(w * scale), int(h * scale)
-                resized = cv2.resize(frame, (new_w, new_h))
+                try:
+                    # Resize frame for thumbnail
+                    h, w = frame.shape[:2]
+                    target_w, target_h = 160, 90
+                    scale = min(target_w / w, target_h / h)
+                    new_w, new_h = int(w * scale), int(h * scale)
+                    resized = cv2.resize(frame, (new_w, new_h))
 
-                # Pad to exact size
-                padded = np.zeros((target_h, target_w, 3), dtype=np.uint8)
-                padded[:] = [30, 30, 30]
-                y_off = (target_h - new_h) // 2
-                x_off = (target_w - new_w) // 2
-                padded[y_off:y_off+new_h, x_off:x_off+new_w] = resized
+                    # Pad to exact size
+                    padded = np.zeros((target_h, target_w, 3), dtype=np.uint8)
+                    padded[:] = [30, 30, 30]
+                    y_off = (target_h - new_h) // 2
+                    x_off = (target_w - new_w) // 2
+                    padded[y_off:y_off+new_h, x_off:x_off+new_w] = resized
 
-                # Draw detection indicator
-                if dets:
-                    color = self._camera_colors.get(cam_id, [0, 1, 0])
-                    bgr_color = [int(c * 255) for c in color]
-                    cv2.rectangle(padded, (0, 0), (target_w-1, target_h-1), bgr_color, 2)
+                    # Draw detection indicator
+                    if dets:
+                        color = self._camera_colors.get(cam_id, [0, 1, 0])
+                        bgr_color = [int(c * 255) for c in color]
+                        cv2.rectangle(padded, (0, 0), (target_w-1, target_h-1), bgr_color, 2)
 
-                # Convert BGR to RGBA (some Open3D versions require RGBA)
-                rgba = cv2.cvtColor(padded, cv2.COLOR_BGR2RGBA)
-
-                # Update image widget - store for GUI thread update
-                rgba_contiguous = np.ascontiguousarray(rgba).astype(np.uint8)
-                img = o3d.geometry.Image(rgba_contiguous)
-
-                # Store the pending image update
-                if not hasattr(self, '_pending_images'):
-                    self._pending_images = {}
-                self._pending_images[cam_id] = img
-
-        # Apply pending image updates directly (we're in the main thread)
-        if hasattr(self, '_pending_images') and self._pending_images and self.window:
-            for cam_id, img in list(self._pending_images.items()):
-                if cam_id in self.image_widgets:
-                    try:
-                        self.image_widgets[cam_id].update_image(img)
-                    except Exception:
-                        pass
-            self._pending_images.clear()
-
-            # Force redraw
-            try:
-                self.window.post_redraw()
-            except Exception:
-                pass
+                    # Convert BGR to RGB for Open3D
+                    rgb = cv2.cvtColor(padded, cv2.COLOR_BGR2RGB)
+                    img = o3d.geometry.Image(np.ascontiguousarray(rgb))
+                    self.image_widgets[cam_id].update_image(img)
+                except Exception:
+                    pass
 
     def _update_markers(self):
         """Update marker positions in 3D scene."""
         with self._pending_lock:
             poses = dict(self._pending_fused)
+            self._pending_fused.clear()
 
         if not poses:
             return
@@ -408,34 +358,38 @@ class IntegratedViewer:
 
         for marker_id, pose in poses.items():
             geom_name = f"marker_{marker_id}"
-
-            # Create or update marker sphere - larger size for visibility
-            sphere = o3d.geometry.TriangleMesh.create_sphere(radius=0.05)
-            sphere.translate([pose.x, pose.y, pose.z])
-            sphere.paint_uniform_color([1.0, 0.2, 0.2])  # Bright red
-            sphere.compute_vertex_normals()
-
-            mat = rendering.MaterialRecord()
-            mat.shader = "defaultLit"
-            mat.base_color = [1.0, 0.2, 0.2, 1.0]
-
-            if scene.has_geometry(geom_name):
-                scene.remove_geometry(geom_name)
-            scene.add_geometry(geom_name, sphere, mat)
-
-            # Also add orientation axes at marker position
             axes_name = f"marker_axes_{marker_id}"
-            axes = o3d.geometry.TriangleMesh.create_coordinate_frame(size=0.1)
-            axes.translate([pose.x, pose.y, pose.z])
 
-            axes_mat = rendering.MaterialRecord()
-            axes_mat.shader = "defaultUnlit"
+            # Create or update marker sphere
+            if marker_id not in self._added_markers:
+                # Create marker sphere
+                sphere = o3d.geometry.TriangleMesh.create_sphere(radius=0.05)
+                sphere.translate([pose.x, pose.y, pose.z])
+                sphere.paint_uniform_color([1.0, 0.2, 0.2])
+                sphere.compute_vertex_normals()
 
-            if scene.has_geometry(axes_name):
-                scene.remove_geometry(axes_name)
-            scene.add_geometry(axes_name, axes, axes_mat)
+                mat = rendering.MaterialRecord()
+                mat.shader = "defaultLit"
+                mat.base_color = [1.0, 0.2, 0.2, 1.0]
 
-            # Draw detection lines to cameras
+                scene.add_geometry(geom_name, sphere, mat)
+
+                # Create axes
+                axes = o3d.geometry.TriangleMesh.create_coordinate_frame(size=0.1)
+                axes.translate([pose.x, pose.y, pose.z])
+                axes_mat = rendering.MaterialRecord()
+                axes_mat.shader = "defaultUnlit"
+                scene.add_geometry(axes_name, axes, axes_mat)
+
+                self._added_markers.add(marker_id)
+            else:
+                # Update position using transform
+                transform = np.eye(4)
+                transform[:3, 3] = [pose.x, pose.y, pose.z]
+                scene.set_geometry_transform(geom_name, transform)
+                scene.set_geometry_transform(axes_name, transform)
+
+            # Update detection lines
             for cam_id in pose.detecting_cameras:
                 line_name = f"line_{marker_id}_{cam_id}"
 
@@ -447,12 +401,18 @@ class IntegratedViewer:
                         break
 
                 if cam_pos is not None:
-                    color = self._camera_colors.get(cam_id, [1, 1, 1])
+                    # Get color
+                    color = [1, 1, 1]
                     for cid, c in self._camera_colors.items():
                         if cid in cam_id or cam_id in cid:
                             color = c
                             break
 
+                    # Remove old line if exists
+                    if line_name in self._added_lines:
+                        scene.remove_geometry(line_name)
+
+                    # Create new line
                     line = o3d.geometry.LineSet()
                     line.points = o3d.utility.Vector3dVector([
                         [pose.x, pose.y, pose.z],
@@ -465,26 +425,42 @@ class IntegratedViewer:
                     line_mat.shader = "unlitLine"
                     line_mat.line_width = 2.0
 
-                    if scene.has_geometry(line_name):
-                        scene.remove_geometry(line_name)
                     scene.add_geometry(line_name, line, line_mat)
+                    self._added_lines.add(line_name)
 
     def _on_tick(self):
-        """Called on each frame update."""
+        """Called periodically by the GUI system."""
         if not self._running:
             return False
 
+        now = time.time()
+
+        # Process message bus
         try:
             self.bus.spin_once()
-            self._update_camera_images()
-            self._update_markers()
         except Exception:
             pass
 
-        return True
+        # Update images at ~5 FPS (every 200ms)
+        if now - self._last_image_update >= 0.2:
+            try:
+                self._update_camera_images()
+            except Exception:
+                pass
+            self._last_image_update = now
+
+        # Update markers at ~10 FPS (every 100ms)
+        if now - self._last_marker_update >= 0.1:
+            try:
+                self._update_markers()
+            except Exception:
+                pass
+            self._last_marker_update = now
+
+        return True  # Keep running
 
     def run(self):
-        """Run the viewer."""
+        """Run the viewer using Open3D's event loop."""
         self._running = True
 
         app = gui.Application.instance
@@ -492,26 +468,11 @@ class IntegratedViewer:
 
         self._create_window()
 
-        # Manual event loop with rate-limited updates
-        last_update = time.time()
-        update_interval = 0.033  # ~30 FPS
+        # Register tick callback - this is the proper way to do updates
+        # The callback is called by the GUI system, not blocking the event loop
+        self.window.set_on_tick_event(self._on_tick)
 
-        while self._running:
-            if not app.run_one_tick():
-                break
-
-            # Process message bus to receive fused poses
-            self.bus.spin_once()
-
-            now = time.time()
-            if now - last_update >= update_interval:
-                try:
-                    self._update_camera_images()
-                    self._update_markers()
-                except Exception:
-                    pass
-                last_update = now
-
-            time.sleep(0.001)
+        # Run Open3D's main loop - this handles all GUI events properly
+        app.run()
 
         self._running = False

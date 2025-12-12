@@ -145,21 +145,21 @@ class MessageBus:
 
         while True:
             try:
-                wait_time = max(0, deadline - time.time()) if timeout > 0 else 0
-                callback, message = self._pending_callbacks.get(timeout=wait_time if wait_time > 0 else None)
+                if timeout == 0:
+                    # Non-blocking mode
+                    callback, message = self._pending_callbacks.get_nowait()
+                else:
+                    wait_time = max(0, deadline - time.time())
+                    if wait_time <= 0:
+                        break
+                    callback, message = self._pending_callbacks.get(timeout=wait_time)
                 callback(message)
                 processed += 1
                 self._pending_callbacks.task_done()
             except Empty:
                 break
             except Exception:
-                # Non-blocking get failed
                 break
-
-            if timeout == 0:
-                # Non-blocking mode: process all available
-                if self._pending_callbacks.empty():
-                    break
 
         return processed
 
