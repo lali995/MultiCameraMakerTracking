@@ -3,41 +3,28 @@
 Standalone Camera Stream Client for MultiCameraMakerTracking
 
 This script captures video from a camera source (RTSP, webcam, or file)
-and streams frames to a remote server over ZMQ for multi-camera ArUco
-marker tracking.
+and streams frames to a remote server over ZMQ.
 
 This is a STANDALONE script - copy it to any remote machine and run it.
 No other project files are required.
-
-Features:
-    - Supports RTSP streams (Orbbec cameras via Docker), webcams, and video files
-    - Uses TCP transport for RTSP to avoid H.264/HEVC reference frame errors
-    - Auto-reconnects on connection loss with exponential backoff
-    - JPEG compression with configurable quality
 
 Requirements (install on remote machine):
     pip3 install opencv-python-headless pyzmq numpy
 
 Usage:
-    # Basic usage with RTSP (default source)
-    python3 stream_client_standalone.py -s <server_ip> -c <camera_id>
+    python3 stream_client_standalone.py --server 192.168.1.100 --camera-id cam1
 
-    # With full camera ID from calibration (recommended for multi-camera tracking)
-    python3 stream_client_standalone.py -s 192.168.1.195 \\
-        -c SZVIDS-250514-07F138-1343C5-E52215 --rtsp rtsp://127.0.0.1:8554/RGBD
+    # With Docker RTSP (Orbbec cameras)
+    python3 stream_client_standalone.py --server 192.168.1.100 --camera-id cam1 \\
+        --rtsp rtsp://127.0.0.1:8554/RGBD
 
     # With webcam
-    python3 stream_client_standalone.py -s 192.168.1.195 -c cam1 --source 0
+    python3 stream_client_standalone.py --server 192.168.1.100 --camera-id cam1 \\
+        --source 0
 
     # With video file (for testing)
-    python3 stream_client_standalone.py -s 192.168.1.195 -c cam1 --source video.mp4
-
-    # Start Docker container automatically
-    python3 stream_client_standalone.py -s 192.168.1.195 -c cam1 --start-docker
-
-Note:
-    The camera-id should match the CameraID in the calibration file for proper
-    pose fusion across multiple cameras. Partial matching is supported.
+    python3 stream_client_standalone.py --server 192.168.1.100 --camera-id cam1 \\
+        --source /path/to/video.mp4
 """
 
 import argparse
@@ -133,14 +120,6 @@ Examples:
     print(f"Opening video source: {source}")
     if source.isdigit():
         cap = cv2.VideoCapture(int(source))
-    elif source.startswith("rtsp://"):
-        # Use TCP transport to avoid "could not find ref with POC" errors
-        # This happens with UDP packet loss causing missing H.264/HEVC reference frames
-        import os
-        os.environ["OPENCV_FFMPEG_CAPTURE_OPTIONS"] = "rtsp_transport;tcp|fflags;nobuffer|flags;low_delay"
-        print("Using TCP transport for RTSP (more reliable)")
-        cap = cv2.VideoCapture(source, cv2.CAP_FFMPEG)
-        cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
     else:
         cap = cv2.VideoCapture(source)
 
@@ -183,9 +162,6 @@ Examples:
             cap.release()
             if source.isdigit():
                 cap = cv2.VideoCapture(int(source))
-            elif source.startswith("rtsp://"):
-                cap = cv2.VideoCapture(source, cv2.CAP_FFMPEG)
-                cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
             else:
                 cap = cv2.VideoCapture(source)
             reconnect_delay = min(reconnect_delay * 2, 30)  # Exponential backoff
