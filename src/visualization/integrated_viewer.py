@@ -83,6 +83,9 @@ class IntegratedViewer:
         self._marker_materials: Dict[int, rendering.MaterialRecord] = {}
         self._added_markers: set = set()
         self._added_lines: set = set()
+        self._added_distance_labels: set = set()
+        self._distance_label_refs: Dict[str, object] = {}  # Store label references for removal
+        self._marker_lines: Dict[int, set] = {}  # Track lines per marker for cleanup
 
         # Pending updates (thread-safe)
         self._pending_fused: Dict[int, FusedMarkerPose] = {}
@@ -362,9 +365,15 @@ class IntegratedViewer:
 
             # Create or update marker sphere
             if marker_id not in self._added_markers:
-                # Create marker sphere
+                # Remove any existing geometry with this name first (safety)
+                try:
+                    scene.remove_geometry(geom_name)
+                    scene.remove_geometry(axes_name)
+                except Exception:
+                    pass
+
+                # Create marker sphere at origin (position via transform)
                 sphere = o3d.geometry.TriangleMesh.create_sphere(radius=0.05)
-                sphere.translate([pose.x, pose.y, pose.z])
                 sphere.paint_uniform_color([1.0, 0.2, 0.2])
                 sphere.compute_vertex_normals()
 
@@ -374,29 +383,54 @@ class IntegratedViewer:
 
                 scene.add_geometry(geom_name, sphere, mat)
 
-                # Create axes
+                # Create axes at origin (position via transform)
                 axes = o3d.geometry.TriangleMesh.create_coordinate_frame(size=0.1)
-                axes.translate([pose.x, pose.y, pose.z])
                 axes_mat = rendering.MaterialRecord()
                 axes_mat.shader = "defaultUnlit"
                 scene.add_geometry(axes_name, axes, axes_mat)
 
                 self._added_markers.add(marker_id)
-            else:
-                # Update position using transform
-                transform = np.eye(4)
-                transform[:3, 3] = [pose.x, pose.y, pose.z]
-                scene.set_geometry_transform(geom_name, transform)
-                scene.set_geometry_transform(axes_name, transform)
 
-            # Update detection lines
+            # Always update position using transform (for both new and existing)
+            transform = np.eye(4)
+            transform[:3, 3] = [pose.x, pose.y, pose.z]
+            scene.set_geometry_transform(geom_name, transform)
+            scene.set_geometry_transform(axes_name, transform)
+
+            # First, remove ALL old lines and labels for this marker
+            if marker_id in self._marker_lines:
+                for old_line_name in list(self._marker_lines[marker_id]):
+                    if old_line_name in self._added_lines:
+                        try:
+                            scene.remove_geometry(old_line_name)
+                        except Exception:
+                            pass
+                        self._added_lines.discard(old_line_name)
+                    # Remove corresponding label
+                    old_label_name = old_line_name.replace("line_", "dist_")
+                    if old_label_name in self._added_distance_labels:
+                        try:
+                            self.scene_widget.remove_3d_label(self._distance_label_refs.get(old_label_name))
+                        except Exception:
+                            pass
+                        self._added_distance_labels.discard(old_label_name)
+                        self._distance_label_refs.pop(old_label_name, None)
+                self._marker_lines[marker_id].clear()
+            else:
+                self._marker_lines[marker_id] = set()
+
+            # Now create new lines for current detecting cameras (deduplicated)
+            seen_cameras = set()
             for cam_id in pose.detecting_cameras:
+                if cam_id in seen_cameras:
+                    continue
+                seen_cameras.add(cam_id)
                 line_name = f"line_{marker_id}_{cam_id}"
 
-                # Find camera position
+                # Find camera position (exact match preferred)
                 cam_pos = None
                 for cp in self._camera_poses:
-                    if cp.camera_id in cam_id or cam_id in cp.camera_id:
+                    if cp.camera_id == cam_id or cp.camera_id in cam_id or cam_id in cp.camera_id:
                         cam_pos = cp.extrinsic[:3, 3]
                         break
 
@@ -404,18 +438,18 @@ class IntegratedViewer:
                     # Get color
                     color = [1, 1, 1]
                     for cid, c in self._camera_colors.items():
-                        if cid in cam_id or cam_id in cid:
+                        if cid == cam_id or cid in cam_id or cam_id in cid:
                             color = c
                             break
 
-                    # Remove old line if exists
-                    if line_name in self._added_lines:
-                        scene.remove_geometry(line_name)
+                    # Calculate distance
+                    marker_pos = np.array([pose.x, pose.y, pose.z])
+                    distance = np.linalg.norm(marker_pos - cam_pos)
 
                     # Create new line
                     line = o3d.geometry.LineSet()
                     line.points = o3d.utility.Vector3dVector([
-                        [pose.x, pose.y, pose.z],
+                        marker_pos.tolist(),
                         cam_pos.tolist()
                     ])
                     line.lines = o3d.utility.Vector2iVector([[0, 1]])
@@ -427,6 +461,19 @@ class IntegratedViewer:
 
                     scene.add_geometry(line_name, line, line_mat)
                     self._added_lines.add(line_name)
+                    self._marker_lines[marker_id].add(line_name)
+
+                    # Add distance label at midpoint of line
+                    label_name = f"dist_{marker_id}_{cam_id}"
+                    midpoint = (marker_pos + cam_pos) / 2
+                    try:
+                        label_ref = self.scene_widget.add_3d_label(midpoint.astype(np.float32), f"{distance:.2f}m")
+                        label_ref.color = gui.Color(1.0, 1.0, 1.0)  # White
+                        label_ref.scale = 1.5  # Bigger text
+                        self._distance_label_refs[label_name] = label_ref
+                        self._added_distance_labels.add(label_name)
+                    except Exception:
+                        pass  # 3D labels may not be supported in all Open3D versions
 
     def _on_tick(self):
         """Called periodically by the GUI system."""
