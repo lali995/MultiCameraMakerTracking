@@ -61,9 +61,11 @@ class StreamClient:
         """
         self.running = True
 
-        # Open video source
+        # Open video source with optimized settings for RTSP
         if source.isdigit():
             cap = cv2.VideoCapture(int(source))
+        elif source.startswith("rtsp://"):
+            cap = cv2.VideoCapture(source)
         else:
             cap = cv2.VideoCapture(source)
 
