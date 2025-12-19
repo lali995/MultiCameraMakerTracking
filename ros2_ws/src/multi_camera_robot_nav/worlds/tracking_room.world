@@ -1,0 +1,516 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <world name="tracking_room">
+
+    <!-- Physics settings -->
+    <physics type="ode">
+      <real_time_update_rate>1000</real_time_update_rate>
+      <max_step_size>0.001</max_step_size>
+    </physics>
+
+    <!-- Lighting -->
+    <include>
+      <uri>model://sun</uri>
+    </include>
+
+    <!-- Ground plane -->
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+
+    <!-- Room walls (4m x 4m x 2.5m room) -->
+    <!-- Floor -->
+    <model name="floor">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <box><size>4.0 4.0 0.02</size></box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box><size>4.0 4.0 0.02</size></box>
+          </geometry>
+          <material>
+            <ambient>0.8 0.8 0.8 1</ambient>
+            <diffuse>0.8 0.8 0.8 1</diffuse>
+          </material>
+        </visual>
+      </link>
+      <pose>0 0 -0.01 0 0 0</pose>
+    </model>
+
+    <!-- Wall 1 (North) -->
+    <model name="wall_north">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <box><size>4.0 0.1 2.5</size></box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box><size>4.0 0.1 2.5</size></box>
+          </geometry>
+          <material>
+            <ambient>0.7 0.7 0.7 1</ambient>
+            <diffuse>0.9 0.9 0.9 1</diffuse>
+          </material>
+        </visual>
+      </link>
+      <pose>0 2.05 1.25 0 0 0</pose>
+    </model>
+
+    <!-- Wall 2 (South) -->
+    <model name="wall_south">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <box><size>4.0 0.1 2.5</size></box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box><size>4.0 0.1 2.5</size></box>
+          </geometry>
+          <material>
+            <ambient>0.7 0.7 0.7 1</ambient>
+            <diffuse>0.9 0.9 0.9 1</diffuse>
+          </material>
+        </visual>
+      </link>
+      <pose>0 -2.05 1.25 0 0 0</pose>
+    </model>
+
+    <!-- Wall 3 (East) -->
+    <model name="wall_east">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <box><size>0.1 4.0 2.5</size></box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box><size>0.1 4.0 2.5</size></box>
+          </geometry>
+          <material>
+            <ambient>0.7 0.7 0.7 1</ambient>
+            <diffuse>0.9 0.9 0.9 1</diffuse>
+          </material>
+        </visual>
+      </link>
+      <pose>2.05 0 1.25 0 0 0</pose>
+    </model>
+
+    <!-- Wall 4 (West) -->
+    <model name="wall_west">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <box><size>0.1 4.0 2.5</size></box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box><size>0.1 4.0 2.5</size></box>
+          </geometry>
+          <material>
+            <ambient>0.7 0.7 0.7 1</ambient>
+            <diffuse>0.9 0.9 0.9 1</diffuse>
+          </material>
+        </visual>
+      </link>
+      <pose>-2.05 0 1.25 0 0 0</pose>
+    </model>
+
+    <!-- Ceiling -->
+    <model name="ceiling">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <box><size>4.0 4.0 0.02</size></box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box><size>4.0 4.0 0.02</size></box>
+          </geometry>
+          <material>
+            <ambient>0.95 0.95 0.95 1</ambient>
+            <diffuse>0.95 0.95 0.95 1</diffuse>
+          </material>
+        </visual>
+      </link>
+      <pose>0 0 2.51 0 0 0</pose>
+    </model>
+
+    <!-- Obstacles for navigation testing -->
+    <!-- Obstacle 1 -->
+    <model name="obstacle_1">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <box><size>0.5 0.5 0.8</size></box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box><size>0.5 0.5 0.8</size></box>
+          </geometry>
+          <material>
+            <ambient>0.8 0.2 0.2 1</ambient>
+            <diffuse>0.8 0.2 0.2 1</diffuse>
+          </material>
+        </visual>
+      </link>
+      <pose>1.0 0.5 0.4 0 0 0</pose>
+    </model>
+
+    <!-- Obstacle 2 -->
+    <model name="obstacle_2">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <cylinder>
+              <radius>0.3</radius>
+              <length>1.0</length>
+            </cylinder>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>0.3</radius>
+              <length>1.0</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.2 0.8 0.2 1</ambient>
+            <diffuse>0.2 0.8 0.2 1</diffuse>
+          </material>
+        </visual>
+      </link>
+      <pose>-0.8 -0.7 0.5 0 0 0</pose>
+    </model>
+
+    <!-- Obstacle 3 -->
+    <model name="obstacle_3">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <box><size>0.8 0.3 0.6</size></box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box><size>0.8 0.3 0.6</size></box>
+          </geometry>
+          <material>
+            <ambient>0.2 0.2 0.8 1</ambient>
+            <diffuse>0.2 0.2 0.8 1</diffuse>
+          </material>
+        </visual>
+      </link>
+      <pose>0.0 1.2 0.3 0 0 0</pose>
+    </model>
+
+    <!-- Camera Mount 1 (NE corner, looking at center at 45°) -->
+    <model name="camera_mount_1">
+      <static>true</static>
+      <link name="link">
+        <!-- Camera body -->
+        <visual name="camera_body">
+          <pose>0 0 0 0 0 0</pose>
+          <geometry>
+            <box><size>0.08 0.08 0.06</size></box>
+          </geometry>
+          <material>
+            <ambient>0.1 0.1 0.1 1</ambient>
+            <diffuse>0.2 0.2 0.2 1</diffuse>
+          </material>
+        </visual>
+        <!-- Camera lens -->
+        <visual name="camera_lens">
+          <pose>0 0 -0.04 0 0 0</pose>
+          <geometry>
+            <cylinder>
+              <radius>0.02</radius>
+              <length>0.02</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.0 0.0 0.0 1</ambient>
+            <diffuse>0.1 0.1 0.1 1</diffuse>
+          </material>
+        </visual>
+        <!-- Depth camera sensor -->
+        <sensor name="depth_camera_1" type="depth">
+          <pose>0 0 0 0 0 0</pose>
+          <update_rate>30</update_rate>
+          <camera>
+            <horizontal_fov>1.047</horizontal_fov>
+            <image>
+              <width>640</width>
+              <height>480</height>
+              <format>R8G8B8</format>
+            </image>
+            <clip>
+              <near>0.1</near>
+              <far>10.0</far>
+            </clip>
+          </camera>
+          <plugin name="depth_camera_plugin_1" filename="libgazebo_ros_camera.so">
+            <ros>
+              <namespace>/cameras</namespace>
+              <remapping>image_raw:=camera_1/image_raw</remapping>
+              <remapping>depth/image_raw:=camera_1/depth/image_raw</remapping>
+              <remapping>camera_info:=camera_1/camera_info</remapping>
+              <remapping>points:=camera_1/points</remapping>
+            </ros>
+            <camera_name>camera_1</camera_name>
+            <frame_name>camera_1_link</frame_name>
+            <min_depth>0.1</min_depth>
+            <max_depth>10.0</max_depth>
+          </plugin>
+        </sensor>
+      </link>
+      <!-- Position: NE corner, 2.4m high, tilted 45° down looking at center -->
+      <!-- Rotation: pitch=-45° to look down, yaw=225° (pointing toward center) -->
+      <pose>1.8 1.8 2.4 0 0.785 -2.356</pose>
+    </model>
+
+    <!-- Camera Mount 2 (NW corner) -->
+    <model name="camera_mount_2">
+      <static>true</static>
+      <link name="link">
+        <visual name="camera_body">
+          <pose>0 0 0 0 0 0</pose>
+          <geometry>
+            <box><size>0.08 0.08 0.06</size></box>
+          </geometry>
+          <material>
+            <ambient>0.1 0.1 0.1 1</ambient>
+            <diffuse>0.2 0.2 0.2 1</diffuse>
+          </material>
+        </visual>
+        <visual name="camera_lens">
+          <pose>0 0 -0.04 0 0 0</pose>
+          <geometry>
+            <cylinder>
+              <radius>0.02</radius>
+              <length>0.02</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.0 0.0 0.0 1</ambient>
+            <diffuse>0.1 0.1 0.1 1</diffuse>
+          </material>
+        </visual>
+        <sensor name="depth_camera_2" type="depth">
+          <pose>0 0 0 0 0 0</pose>
+          <update_rate>30</update_rate>
+          <camera>
+            <horizontal_fov>1.047</horizontal_fov>
+            <image>
+              <width>640</width>
+              <height>480</height>
+              <format>R8G8B8</format>
+            </image>
+            <clip>
+              <near>0.1</near>
+              <far>10.0</far>
+            </clip>
+          </camera>
+          <plugin name="depth_camera_plugin_2" filename="libgazebo_ros_camera.so">
+            <ros>
+              <namespace>/cameras</namespace>
+              <remapping>image_raw:=camera_2/image_raw</remapping>
+              <remapping>depth/image_raw:=camera_2/depth/image_raw</remapping>
+              <remapping>camera_info:=camera_2/camera_info</remapping>
+              <remapping>points:=camera_2/points</remapping>
+            </ros>
+            <camera_name>camera_2</camera_name>
+            <frame_name>camera_2_link</frame_name>
+            <min_depth>0.1</min_depth>
+            <max_depth>10.0</max_depth>
+          </plugin>
+        </sensor>
+      </link>
+      <!-- Position: NW corner, yaw=-45° (pointing toward center) -->
+      <pose>-1.8 1.8 2.4 0 0.785 -0.785</pose>
+    </model>
+
+    <!-- Camera Mount 3 (SW corner) -->
+    <model name="camera_mount_3">
+      <static>true</static>
+      <link name="link">
+        <visual name="camera_body">
+          <pose>0 0 0 0 0 0</pose>
+          <geometry>
+            <box><size>0.08 0.08 0.06</size></box>
+          </geometry>
+          <material>
+            <ambient>0.1 0.1 0.1 1</ambient>
+            <diffuse>0.2 0.2 0.2 1</diffuse>
+          </material>
+        </visual>
+        <visual name="camera_lens">
+          <pose>0 0 -0.04 0 0 0</pose>
+          <geometry>
+            <cylinder>
+              <radius>0.02</radius>
+              <length>0.02</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.0 0.0 0.0 1</ambient>
+            <diffuse>0.1 0.1 0.1 1</diffuse>
+          </material>
+        </visual>
+        <sensor name="depth_camera_3" type="depth">
+          <pose>0 0 0 0 0 0</pose>
+          <update_rate>30</update_rate>
+          <camera>
+            <horizontal_fov>1.047</horizontal_fov>
+            <image>
+              <width>640</width>
+              <height>480</height>
+              <format>R8G8B8</format>
+            </image>
+            <clip>
+              <near>0.1</near>
+              <far>10.0</far>
+            </clip>
+          </camera>
+          <plugin name="depth_camera_plugin_3" filename="libgazebo_ros_camera.so">
+            <ros>
+              <namespace>/cameras</namespace>
+              <remapping>image_raw:=camera_3/image_raw</remapping>
+              <remapping>depth/image_raw:=camera_3/depth/image_raw</remapping>
+              <remapping>camera_info:=camera_3/camera_info</remapping>
+              <remapping>points:=camera_3/points</remapping>
+            </ros>
+            <camera_name>camera_3</camera_name>
+            <frame_name>camera_3_link</frame_name>
+            <min_depth>0.1</min_depth>
+            <max_depth>10.0</max_depth>
+          </plugin>
+        </sensor>
+      </link>
+      <!-- Position: SW corner, yaw=45° (pointing toward center) -->
+      <pose>-1.8 -1.8 2.4 0 0.785 0.785</pose>
+    </model>
+
+    <!-- Camera Mount 4 (SE corner) -->
+    <model name="camera_mount_4">
+      <static>true</static>
+      <link name="link">
+        <visual name="camera_body">
+          <pose>0 0 0 0 0 0</pose>
+          <geometry>
+            <box><size>0.08 0.08 0.06</size></box>
+          </geometry>
+          <material>
+            <ambient>0.1 0.1 0.1 1</ambient>
+            <diffuse>0.2 0.2 0.2 1</diffuse>
+          </material>
+        </visual>
+        <visual name="camera_lens">
+          <pose>0 0 -0.04 0 0 0</pose>
+          <geometry>
+            <cylinder>
+              <radius>0.02</radius>
+              <length>0.02</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <ambient>0.0 0.0 0.0 1</ambient>
+            <diffuse>0.1 0.1 0.1 1</diffuse>
+          </material>
+        </visual>
+        <sensor name="depth_camera_4" type="depth">
+          <pose>0 0 0 0 0 0</pose>
+          <update_rate>30</update_rate>
+          <camera>
+            <horizontal_fov>1.047</horizontal_fov>
+            <image>
+              <width>640</width>
+              <height>480</height>
+              <format>R8G8B8</format>
+            </image>
+            <clip>
+              <near>0.1</near>
+              <far>10.0</far>
+            </clip>
+          </camera>
+          <plugin name="depth_camera_plugin_4" filename="libgazebo_ros_camera.so">
+            <ros>
+              <namespace>/cameras</namespace>
+              <remapping>image_raw:=camera_4/image_raw</remapping>
+              <remapping>depth/image_raw:=camera_4/depth/image_raw</remapping>
+              <remapping>camera_info:=camera_4/camera_info</remapping>
+              <remapping>points:=camera_4/points</remapping>
+            </ros>
+            <camera_name>camera_4</camera_name>
+            <frame_name>camera_4_link</frame_name>
+            <min_depth>0.1</min_depth>
+            <max_depth>10.0</max_depth>
+          </plugin>
+        </sensor>
+      </link>
+      <!-- Position: SE corner, yaw=135° (pointing toward center) -->
+      <pose>1.8 -1.8 2.4 0 0.785 2.356</pose>
+    </model>
+
+    <!-- Additional indoor lighting -->
+    <light name="ceiling_light_1" type="point">
+      <pose>0 0 2.3 0 0 0</pose>
+      <diffuse>0.8 0.8 0.8 1</diffuse>
+      <specular>0.1 0.1 0.1 1</specular>
+      <attenuation>
+        <range>10</range>
+        <constant>0.5</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <cast_shadows>false</cast_shadows>
+    </light>
+
+    <light name="ceiling_light_2" type="point">
+      <pose>1.0 1.0 2.3 0 0 0</pose>
+      <diffuse>0.6 0.6 0.6 1</diffuse>
+      <specular>0.1 0.1 0.1 1</specular>
+      <attenuation>
+        <range>10</range>
+        <constant>0.5</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <cast_shadows>false</cast_shadows>
+    </light>
+
+    <light name="ceiling_light_3" type="point">
+      <pose>-1.0 -1.0 2.3 0 0 0</pose>
+      <diffuse>0.6 0.6 0.6 1</diffuse>
+      <specular>0.1 0.1 0.1 1</specular>
+      <attenuation>
+        <range>10</range>
+        <constant>0.5</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <cast_shadows>false</cast_shadows>
+    </light>
+
+  </world>
+</sdf>
