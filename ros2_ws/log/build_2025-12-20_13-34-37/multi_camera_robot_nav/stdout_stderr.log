@@ -1,0 +1,24 @@
+running egg_info
+writing ../../build/multi_camera_robot_nav/multi_camera_robot_nav.egg-info/PKG-INFO
+writing dependency_links to ../../build/multi_camera_robot_nav/multi_camera_robot_nav.egg-info/dependency_links.txt
+writing entry points to ../../build/multi_camera_robot_nav/multi_camera_robot_nav.egg-info/entry_points.txt
+writing requirements to ../../build/multi_camera_robot_nav/multi_camera_robot_nav.egg-info/requires.txt
+writing top-level names to ../../build/multi_camera_robot_nav/multi_camera_robot_nav.egg-info/top_level.txt
+reading manifest file '../../build/multi_camera_robot_nav/multi_camera_robot_nav.egg-info/SOURCES.txt'
+writing manifest file '../../build/multi_camera_robot_nav/multi_camera_robot_nav.egg-info/SOURCES.txt'
+running build
+running build_py
+running install
+running install_lib
+running install_data
+copying config/navigation.rviz -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/multi_camera_robot_nav/config
+running install_egg_info
+removing '/home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/python3.10/site-packages/multi_camera_robot_nav-0.0.1-py3.10.egg-info' (and everything under it)
+Copying ../../build/multi_camera_robot_nav/multi_camera_robot_nav.egg-info to /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/python3.10/site-packages/multi_camera_robot_nav-0.0.1-py3.10.egg-info
+running install_scripts
+Installing marker_tracker_node script to /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/multi_camera_robot_nav
+Installing occupancy_grid_mapper_node script to /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/multi_camera_robot_nav
+Installing point_cloud_stitcher_node script to /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/multi_camera_robot_nav
+Installing simulation_bridge_node script to /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/multi_camera_robot_nav
+Installing tf_broadcaster_node script to /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/multi_camera_robot_nav
+writing list of installed files to '/home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav/install.log'

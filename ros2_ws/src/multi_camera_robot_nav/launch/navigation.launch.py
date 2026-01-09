@@ -152,7 +152,7 @@ def generate_launch_description():
         arguments=['0', '0', '0', '0', '0', '0', 'world', 'map']
     )
 
-    # Nav2 bringup
+    # Nav2 bringup with extended timeout for simulation
     nav2_bringup = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(nav2_bringup_share, 'launch', 'navigation_launch.py')
@@ -161,6 +161,7 @@ def generate_launch_description():
             'use_sim_time': LaunchConfiguration('use_sim_time'),
             'params_file': nav2_params_file,
             'autostart': LaunchConfiguration('autostart'),
+            'bond_timeout': '10.0',
         }.items()
     )
 

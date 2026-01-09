@@ -21,6 +21,9 @@ setup(
         # Config files
         (os.path.join('share', package_name, 'config'),
             glob(os.path.join('config', '*.yaml'))),
+        # RViz config files
+        (os.path.join('share', package_name, 'config'),
+            glob(os.path.join('config', '*.rviz'))),
         # URDF/mesh files
         (os.path.join('share', package_name, 'urdf'),
             glob(os.path.join('urdf', '*.urdf'))),
@@ -29,6 +32,14 @@ setup(
         # World files
         (os.path.join('share', package_name, 'worlds'),
             glob(os.path.join('worlds', '*.world'))),
+        (os.path.join('share', package_name, 'worlds'),
+            glob(os.path.join('worlds', '*.sdf'))),
+        # Robot model files
+        (os.path.join('share', package_name, 'models', 'marker_robot'),
+            glob(os.path.join('models', 'marker_robot', '*'))),
+        # Textures
+        (os.path.join('share', package_name, 'textures'),
+            glob(os.path.join('textures', '*.png'))),
     ],
     install_requires=['setuptools', 'numpy'],
     zip_safe=True,

@@ -1,0 +1,59 @@
+[1.372s] Invoking command in '/home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav': PYTHONPATH=/home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --uninstall --editable --build-directory /home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav/build
+[2.053s] running develop
+[2.480s] Removing /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/python3.10/site-packages/multi-camera-robot-nav.egg-link (link to .)
+[2.565s] Invoked command in '/home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav' returned '0': PYTHONPATH=/home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --uninstall --editable --build-directory /home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav/build
+[2.568s] Invoking command in '/home/determ/MultiCameraMakerTracking/ros2_ws/src/multi_camera_robot_nav': PYTHONPATH=/home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/multi_camera_robot_nav build --build-base /home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav/build install --record /home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav/install.log --single-version-externally-managed install_data --force
+[3.095s] running egg_info
+[3.097s] writing ../../build/multi_camera_robot_nav/multi_camera_robot_nav.egg-info/PKG-INFO
+[3.099s] writing dependency_links to ../../build/multi_camera_robot_nav/multi_camera_robot_nav.egg-info/dependency_links.txt
+[3.102s] writing entry points to ../../build/multi_camera_robot_nav/multi_camera_robot_nav.egg-info/entry_points.txt
+[3.102s] writing requirements to ../../build/multi_camera_robot_nav/multi_camera_robot_nav.egg-info/requires.txt
+[3.102s] writing top-level names to ../../build/multi_camera_robot_nav/multi_camera_robot_nav.egg-info/top_level.txt
+[3.106s] reading manifest file '../../build/multi_camera_robot_nav/multi_camera_robot_nav.egg-info/SOURCES.txt'
+[3.109s] writing manifest file '../../build/multi_camera_robot_nav/multi_camera_robot_nav.egg-info/SOURCES.txt'
+[3.110s] running build
+[3.110s] running build_py
+[3.111s] running install
+[3.112s] running install_lib
+[3.113s] creating /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/python3.10/site-packages/multi_camera_robot_nav
+[3.114s] copying /home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav/build/lib/multi_camera_robot_nav/occupancy_grid_mapper_node.py -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/python3.10/site-packages/multi_camera_robot_nav
+[3.114s] copying /home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav/build/lib/multi_camera_robot_nav/simulation_bridge_node.py -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/python3.10/site-packages/multi_camera_robot_nav
+[3.114s] copying /home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav/build/lib/multi_camera_robot_nav/marker_tracker_node.py -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/python3.10/site-packages/multi_camera_robot_nav
+[3.114s] copying /home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav/build/lib/multi_camera_robot_nav/point_cloud_stitcher_node.py -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/python3.10/site-packages/multi_camera_robot_nav
+[3.115s] copying /home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav/build/lib/multi_camera_robot_nav/tf_broadcaster_node.py -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/python3.10/site-packages/multi_camera_robot_nav
+[3.115s] copying /home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav/build/lib/multi_camera_robot_nav/__init__.py -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/python3.10/site-packages/multi_camera_robot_nav
+[3.117s] byte-compiling /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/python3.10/site-packages/multi_camera_robot_nav/occupancy_grid_mapper_node.py to occupancy_grid_mapper_node.cpython-310.pyc
+[3.119s] byte-compiling /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/python3.10/site-packages/multi_camera_robot_nav/simulation_bridge_node.py to simulation_bridge_node.cpython-310.pyc
+[3.121s] byte-compiling /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/python3.10/site-packages/multi_camera_robot_nav/marker_tracker_node.py to marker_tracker_node.cpython-310.pyc
+[3.123s] byte-compiling /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/python3.10/site-packages/multi_camera_robot_nav/point_cloud_stitcher_node.py to point_cloud_stitcher_node.cpython-310.pyc
+[3.127s] byte-compiling /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/python3.10/site-packages/multi_camera_robot_nav/tf_broadcaster_node.py to tf_broadcaster_node.cpython-310.pyc
+[3.128s] byte-compiling /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/python3.10/site-packages/multi_camera_robot_nav/__init__.py to __init__.cpython-310.pyc
+[3.129s] running install_data
+[3.129s] copying resource/multi_camera_robot_nav -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/ament_index/resource_index/packages
+[3.129s] copying package.xml -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/multi_camera_robot_nav
+[3.129s] copying hooks/ament_prefix_path.dsv.in -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/multi_camera_robot_nav/hook
+[3.136s] copying launch/gz_simulation.launch.py -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/multi_camera_robot_nav/launch
+[3.136s] copying launch/mapping.launch.py -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/multi_camera_robot_nav/launch
+[3.137s] copying launch/gazebo_simulation.launch.py -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/multi_camera_robot_nav/launch
+[3.137s] copying launch/marker_tracking.launch.py -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/multi_camera_robot_nav/launch
+[3.137s] copying launch/navigation.launch.py -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/multi_camera_robot_nav/launch
+[3.137s] copying launch/simulation.launch.py -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/multi_camera_robot_nav/launch
+[3.137s] copying config/nav2_params.yaml -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/multi_camera_robot_nav/config
+[3.137s] copying config/navigation.rviz -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/multi_camera_robot_nav/config
+[3.137s] copying urdf/robot.urdf -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/multi_camera_robot_nav/urdf
+[3.137s] copying worlds/tracking_room.world -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/multi_camera_robot_nav/worlds
+[3.137s] copying worlds/tracking_room.sdf -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/multi_camera_robot_nav/worlds
+[3.138s] copying models/marker_robot/model.sdf -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/multi_camera_robot_nav/models/marker_robot
+[3.138s] copying models/marker_robot/aruco_marker_0.png -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/multi_camera_robot_nav/models/marker_robot
+[3.138s] copying models/marker_robot/model.config -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/multi_camera_robot_nav/models/marker_robot
+[3.138s] copying textures/aruco_marker_0.png -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/multi_camera_robot_nav/textures
+[3.138s] running install_egg_info
+[3.139s] Copying ../../build/multi_camera_robot_nav/multi_camera_robot_nav.egg-info to /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/python3.10/site-packages/multi_camera_robot_nav-0.0.1-py3.10.egg-info
+[3.141s] running install_scripts
+[3.185s] Installing marker_tracker_node script to /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/multi_camera_robot_nav
+[3.186s] Installing occupancy_grid_mapper_node script to /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/multi_camera_robot_nav
+[3.187s] Installing point_cloud_stitcher_node script to /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/multi_camera_robot_nav
+[3.187s] Installing simulation_bridge_node script to /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/multi_camera_robot_nav
+[3.187s] Installing tf_broadcaster_node script to /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/multi_camera_robot_nav
+[3.187s] writing list of installed files to '/home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav/install.log'
+[3.267s] Invoked command in '/home/determ/MultiCameraMakerTracking/ros2_ws/src/multi_camera_robot_nav' returned '0': PYTHONPATH=/home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/multi_camera_robot_nav build --build-base /home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav/build install --record /home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav/install.log --single-version-externally-managed install_data --force

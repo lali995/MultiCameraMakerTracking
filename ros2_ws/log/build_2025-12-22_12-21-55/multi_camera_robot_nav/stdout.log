@@ -1,0 +1,19 @@
+running develop
+running egg_info
+writing multi_camera_robot_nav.egg-info/PKG-INFO
+writing dependency_links to multi_camera_robot_nav.egg-info/dependency_links.txt
+writing entry points to multi_camera_robot_nav.egg-info/entry_points.txt
+writing requirements to multi_camera_robot_nav.egg-info/requires.txt
+writing top-level names to multi_camera_robot_nav.egg-info/top_level.txt
+reading manifest file 'multi_camera_robot_nav.egg-info/SOURCES.txt'
+writing manifest file 'multi_camera_robot_nav.egg-info/SOURCES.txt'
+running build_ext
+Creating /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/python3.10/site-packages/multi-camera-robot-nav.egg-link (link to .)
+Installing marker_tracker_node script to /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/multi_camera_robot_nav
+Installing occupancy_grid_mapper_node script to /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/multi_camera_robot_nav
+Installing point_cloud_stitcher_node script to /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/multi_camera_robot_nav
+Installing simulation_bridge_node script to /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/multi_camera_robot_nav
+Installing tf_broadcaster_node script to /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/multi_camera_robot_nav
+
+Installed /home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav
+running symlink_data

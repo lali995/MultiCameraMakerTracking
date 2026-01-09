@@ -1,0 +1,7 @@
+[console_scripts]
+marker_tracker_node = multi_camera_robot_nav.marker_tracker_node:main
+occupancy_grid_mapper_node = multi_camera_robot_nav.occupancy_grid_mapper_node:main
+point_cloud_stitcher_node = multi_camera_robot_nav.point_cloud_stitcher_node:main
+simulation_bridge_node = multi_camera_robot_nav.simulation_bridge_node:main
+tf_broadcaster_node = multi_camera_robot_nav.tf_broadcaster_node:main
+

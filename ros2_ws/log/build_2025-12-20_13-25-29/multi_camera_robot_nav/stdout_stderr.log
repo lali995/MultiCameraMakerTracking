@@ -1,0 +1,55 @@
+running develop
+Removing /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/python3.10/site-packages/multi-camera-robot-nav.egg-link (link to .)
+running egg_info
+writing ../../build/multi_camera_robot_nav/multi_camera_robot_nav.egg-info/PKG-INFO
+writing dependency_links to ../../build/multi_camera_robot_nav/multi_camera_robot_nav.egg-info/dependency_links.txt
+writing entry points to ../../build/multi_camera_robot_nav/multi_camera_robot_nav.egg-info/entry_points.txt
+writing requirements to ../../build/multi_camera_robot_nav/multi_camera_robot_nav.egg-info/requires.txt
+writing top-level names to ../../build/multi_camera_robot_nav/multi_camera_robot_nav.egg-info/top_level.txt
+reading manifest file '../../build/multi_camera_robot_nav/multi_camera_robot_nav.egg-info/SOURCES.txt'
+writing manifest file '../../build/multi_camera_robot_nav/multi_camera_robot_nav.egg-info/SOURCES.txt'
+running build
+running build_py
+running install
+running install_lib
+creating /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/python3.10/site-packages/multi_camera_robot_nav
+copying /home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav/build/lib/multi_camera_robot_nav/occupancy_grid_mapper_node.py -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/python3.10/site-packages/multi_camera_robot_nav
+copying /home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav/build/lib/multi_camera_robot_nav/simulation_bridge_node.py -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/python3.10/site-packages/multi_camera_robot_nav
+copying /home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav/build/lib/multi_camera_robot_nav/marker_tracker_node.py -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/python3.10/site-packages/multi_camera_robot_nav
+copying /home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav/build/lib/multi_camera_robot_nav/point_cloud_stitcher_node.py -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/python3.10/site-packages/multi_camera_robot_nav
+copying /home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav/build/lib/multi_camera_robot_nav/tf_broadcaster_node.py -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/python3.10/site-packages/multi_camera_robot_nav
+copying /home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav/build/lib/multi_camera_robot_nav/__init__.py -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/python3.10/site-packages/multi_camera_robot_nav
+byte-compiling /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/python3.10/site-packages/multi_camera_robot_nav/occupancy_grid_mapper_node.py to occupancy_grid_mapper_node.cpython-310.pyc
+byte-compiling /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/python3.10/site-packages/multi_camera_robot_nav/simulation_bridge_node.py to simulation_bridge_node.cpython-310.pyc
+byte-compiling /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/python3.10/site-packages/multi_camera_robot_nav/marker_tracker_node.py to marker_tracker_node.cpython-310.pyc
+byte-compiling /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/python3.10/site-packages/multi_camera_robot_nav/point_cloud_stitcher_node.py to point_cloud_stitcher_node.cpython-310.pyc
+byte-compiling /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/python3.10/site-packages/multi_camera_robot_nav/tf_broadcaster_node.py to tf_broadcaster_node.cpython-310.pyc
+byte-compiling /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/python3.10/site-packages/multi_camera_robot_nav/__init__.py to __init__.cpython-310.pyc
+running install_data
+copying resource/multi_camera_robot_nav -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/ament_index/resource_index/packages
+copying package.xml -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/multi_camera_robot_nav
+copying hooks/ament_prefix_path.dsv.in -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/multi_camera_robot_nav/hook
+copying launch/gz_simulation.launch.py -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/multi_camera_robot_nav/launch
+copying launch/mapping.launch.py -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/multi_camera_robot_nav/launch
+copying launch/gazebo_simulation.launch.py -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/multi_camera_robot_nav/launch
+copying launch/marker_tracking.launch.py -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/multi_camera_robot_nav/launch
+copying launch/navigation.launch.py -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/multi_camera_robot_nav/launch
+copying launch/simulation.launch.py -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/multi_camera_robot_nav/launch
+copying config/nav2_params.yaml -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/multi_camera_robot_nav/config
+copying config/navigation.rviz -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/multi_camera_robot_nav/config
+copying urdf/robot.urdf -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/multi_camera_robot_nav/urdf
+copying worlds/tracking_room.world -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/multi_camera_robot_nav/worlds
+copying worlds/tracking_room.sdf -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/multi_camera_robot_nav/worlds
+copying models/marker_robot/model.sdf -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/multi_camera_robot_nav/models/marker_robot
+copying models/marker_robot/aruco_marker_0.png -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/multi_camera_robot_nav/models/marker_robot
+copying models/marker_robot/model.config -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/multi_camera_robot_nav/models/marker_robot
+copying textures/aruco_marker_0.png -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/multi_camera_robot_nav/textures
+running install_egg_info
+Copying ../../build/multi_camera_robot_nav/multi_camera_robot_nav.egg-info to /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/python3.10/site-packages/multi_camera_robot_nav-0.0.1-py3.10.egg-info
+running install_scripts
+Installing marker_tracker_node script to /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/multi_camera_robot_nav
+Installing occupancy_grid_mapper_node script to /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/multi_camera_robot_nav
+Installing point_cloud_stitcher_node script to /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/multi_camera_robot_nav
+Installing simulation_bridge_node script to /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/multi_camera_robot_nav
+Installing tf_broadcaster_node script to /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/multi_camera_robot_nav
+writing list of installed files to '/home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav/install.log'

@@ -44,6 +44,8 @@ class OccupancyGridMapperNode(Node):
         self.declare_parameter('free_threshold', 3)      # Points needed for free
         self.declare_parameter('occupied_threshold', 5)  # Points needed for occupied
         self.declare_parameter('publish_rate', 5.0)      # Hz
+        self.declare_parameter('static_map', True)        # Generate map once at startup
+        self.declare_parameter('initialization_time', 3.0)  # Seconds to collect data before finalizing
 
         # Get parameters
         self.map_frame = self.get_parameter('map_frame').value
@@ -57,6 +59,8 @@ class OccupancyGridMapperNode(Node):
         self.free_threshold = self.get_parameter('free_threshold').value
         self.occupied_threshold = self.get_parameter('occupied_threshold').value
         self.publish_rate = self.get_parameter('publish_rate').value
+        self.static_map = self.get_parameter('static_map').value
+        self.initialization_time = self.get_parameter('initialization_time').value
 
         # Calculate grid dimensions
         self.grid_width = int(self.map_width / self.resolution)
@@ -66,9 +70,14 @@ class OccupancyGridMapperNode(Node):
         self.obstacle_counts = np.zeros((self.grid_height, self.grid_width), dtype=np.int32)
         self.observation_counts = np.zeros((self.grid_height, self.grid_width), dtype=np.int32)
 
-        # QoS profile
+        # Static map state tracking
+        self.map_finalized = False
+        self.final_grid = None
+        self.start_time = None  # Will be set on first cloud received
+
+        # QoS profile - must match publisher (RELIABLE)
         qos = QoSProfile(
-            reliability=ReliabilityPolicy.BEST_EFFORT,
+            reliability=ReliabilityPolicy.RELIABLE,
             durability=DurabilityPolicy.VOLATILE,
             depth=1
         )
@@ -99,10 +108,15 @@ class OccupancyGridMapperNode(Node):
         timer_period = 1.0 / self.publish_rate
         self.timer = self.create_timer(timer_period, self.publish_map)
 
+        mode = "static (one-time)" if self.static_map else "dynamic (continuous)"
         self.get_logger().info(
             f'Occupancy Grid Mapper started: {self.grid_width}x{self.grid_height} grid, '
-            f'{self.resolution}m resolution'
+            f'{self.resolution}m resolution, mode: {mode}'
         )
+        if self.static_map:
+            self.get_logger().info(
+                f'Map will be finalized after {self.initialization_time}s of data collection'
+            )
 
     def cloud_callback(self, msg: PointCloud2):
         """Store latest point cloud."""
@@ -140,8 +154,9 @@ class OccupancyGridMapperNode(Node):
             if self.is_in_grid(gx, gy):
                 temp_counts[gy, gx] += 1
 
-        # Update persistent counts with decay
-        self.obstacle_counts = (self.obstacle_counts * 0.9).astype(np.int32)
+        # Update persistent counts (decay only in dynamic mode)
+        if not self.static_map:
+            self.obstacle_counts = (self.obstacle_counts * 0.9).astype(np.int32)
         self.obstacle_counts += temp_counts
 
         # Update observation counts
@@ -149,34 +164,56 @@ class OccupancyGridMapperNode(Node):
         self.observation_counts[observed_cells] += 1
 
     def generate_occupancy_grid(self) -> np.ndarray:
-        """Generate occupancy grid from counts."""
-        grid = np.full((self.grid_height, self.grid_width), -1, dtype=np.int8)
+        """Generate occupancy grid from counts.
 
-        # Mark observed cells
-        observed = self.observation_counts > 0
+        For ceiling camera setup: Default cells to FREE (0) since we assume
+        the floor is traversable unless we detect obstacles. This is because
+        ceiling cameras see obstacle tops, not the floor itself.
+        """
+        # Start with all cells as free - ceiling cameras see obstacles, not floor
+        grid = np.full((self.grid_height, self.grid_width), 0, dtype=np.int8)
 
-        # Free cells: observed but few obstacles
-        free_mask = observed & (self.obstacle_counts < self.free_threshold)
-        grid[free_mask] = 0
-
-        # Occupied cells: many obstacles
+        # Occupied cells: many obstacle detections
         occupied_mask = self.obstacle_counts >= self.occupied_threshold
         grid[occupied_mask] = 100
 
-        # Cells with some obstacles: partially occupied
-        partial_mask = observed & (self.obstacle_counts >= self.free_threshold) & ~occupied_mask
+        # Partially occupied cells: some obstacles but below threshold
+        partial_mask = (self.obstacle_counts >= self.free_threshold) & ~occupied_mask
         grid[partial_mask] = 50
 
         return grid
 
     def publish_map(self):
         """Update and publish occupancy grid."""
-        if self.latest_cloud is not None:
-            self.update_from_cloud(self.latest_cloud)
-            self.latest_cloud = None  # Clear to avoid re-processing
+        # If map is finalized (static mode), just publish the cached grid
+        if self.map_finalized and self.final_grid is not None:
+            grid = self.final_grid
+        else:
+            # Process new cloud data
+            if self.latest_cloud is not None:
+                # Start timing on first cloud received
+                if self.start_time is None:
+                    self.start_time = self.get_clock().now()
+                    self.get_logger().info('First point cloud received, starting map initialization...')
 
-        # Generate grid
-        grid = self.generate_occupancy_grid()
+                self.update_from_cloud(self.latest_cloud)
+                self.latest_cloud = None  # Clear to avoid re-processing
+
+            # Check if we should finalize the map (static mode only)
+            if self.static_map and not self.map_finalized and self.start_time is not None:
+                elapsed = (self.get_clock().now() - self.start_time).nanoseconds / 1e9
+                if elapsed >= self.initialization_time:
+                    # Finalize the map
+                    self.final_grid = self.generate_occupancy_grid()
+                    self.map_finalized = True
+                    # Unsubscribe from point cloud to save resources
+                    self.destroy_subscription(self.cloud_sub)
+                    self.get_logger().info(
+                        f'Map finalized after {elapsed:.1f}s. Static map will be used from now on.'
+                    )
+
+            # Generate grid (dynamic mode or still initializing)
+            grid = self.final_grid if self.map_finalized else self.generate_occupancy_grid()
 
         # Create message
         msg = OccupancyGrid()

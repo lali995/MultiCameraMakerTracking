@@ -1,0 +1,32 @@
+[1.499s] Invoking command in '/home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav': PYTHONPATH=/home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav/build --no-deps symlink_data --force
+[2.124s] running develop
+[2.447s] running egg_info
+[2.448s] writing multi_camera_robot_nav.egg-info/PKG-INFO
+[2.449s] writing dependency_links to multi_camera_robot_nav.egg-info/dependency_links.txt
+[2.450s] writing entry points to multi_camera_robot_nav.egg-info/entry_points.txt
+[2.453s] writing requirements to multi_camera_robot_nav.egg-info/requires.txt
+[2.454s] writing top-level names to multi_camera_robot_nav.egg-info/top_level.txt
+[2.460s] reading manifest file 'multi_camera_robot_nav.egg-info/SOURCES.txt'
+[2.463s] writing manifest file 'multi_camera_robot_nav.egg-info/SOURCES.txt'
+[2.467s] running build_ext
+[2.468s] Creating /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/python3.10/site-packages/multi-camera-robot-nav.egg-link (link to .)
+[2.470s] Installing marker_tracker_node script to /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/multi_camera_robot_nav
+[2.471s] Installing occupancy_grid_mapper_node script to /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/multi_camera_robot_nav
+[2.472s] Installing point_cloud_stitcher_node script to /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/multi_camera_robot_nav
+[2.473s] Installing simulation_bridge_node script to /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/multi_camera_robot_nav
+[2.473s] Installing tf_broadcaster_node script to /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/multi_camera_robot_nav
+[2.474s] 
+[2.475s] Installed /home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav
+[2.475s] running symlink_data
+[2.476s] symbolically linking /home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav/resource/multi_camera_robot_nav -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/ament_index/resource_index/packages
+[2.477s] symbolically linking /home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav/package.xml -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/multi_camera_robot_nav
+[2.478s] symbolically linking /home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav/hooks/ament_prefix_path.dsv.in -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/multi_camera_robot_nav/hook
+[2.478s] symbolically linking /home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav/launch/gz_simulation.launch.py -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/multi_camera_robot_nav/launch
+[2.479s] symbolically linking /home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav/launch/mapping.launch.py -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/multi_camera_robot_nav/launch
+[2.480s] symbolically linking /home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav/launch/gazebo_simulation.launch.py -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/multi_camera_robot_nav/launch
+[2.480s] symbolically linking /home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav/launch/marker_tracking.launch.py -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/multi_camera_robot_nav/launch
+[2.481s] symbolically linking /home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav/launch/navigation.launch.py -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/multi_camera_robot_nav/launch
+[2.482s] symbolically linking /home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav/launch/simulation.launch.py -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/multi_camera_robot_nav/launch
+[2.482s] symbolically linking /home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav/config/nav2_params.yaml -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/multi_camera_robot_nav/config
+[2.483s] error: [Errno 2] No such file or directory: '/home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/multi_camera_robot_nav/config/navigation.rviz'
+[2.567s] Invoked command in '/home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav' returned '1': PYTHONPATH=/home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav/build --no-deps symlink_data --force

@@ -1,0 +1,6 @@
+source;share/multi_camera_robot_nav/hook/pythonpath.ps1
+source;share/multi_camera_robot_nav/hook/pythonpath.dsv
+source;share/multi_camera_robot_nav/hook/pythonpath.sh
+source;../../build/multi_camera_robot_nav/share/multi_camera_robot_nav/hook/pythonpath_develop.ps1
+source;../../build/multi_camera_robot_nav/share/multi_camera_robot_nav/hook/pythonpath_develop.dsv
+source;../../build/multi_camera_robot_nav/share/multi_camera_robot_nav/hook/pythonpath_develop.sh

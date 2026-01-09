@@ -1,0 +1,13 @@
+Metadata-Version: 2.1
+Name: multi-camera-robot-nav
+Version: 0.0.1
+Summary: Multi-camera marker tracking for robot navigation using external cameras
+Home-page: UNKNOWN
+Maintainer: determ
+Maintainer-email: determ@local
+License: MIT
+Platform: UNKNOWN
+Provides-Extra: test
+
+UNKNOWN
+

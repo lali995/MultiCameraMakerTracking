@@ -1,0 +1,61 @@
+[0.000000] (-) TimerEvent: {}
+[0.000423] (multi_camera_robot_nav) JobQueued: {'identifier': 'multi_camera_robot_nav', 'dependencies': OrderedDict()}
+[0.000704] (multi_camera_robot_nav) JobStarted: {'identifier': 'multi_camera_robot_nav'}
+[0.097182] (-) TimerEvent: {}
+[0.197571] (-) TimerEvent: {}
+[0.297984] (-) TimerEvent: {}
+[0.398352] (-) TimerEvent: {}
+[0.498728] (-) TimerEvent: {}
+[0.599064] (-) TimerEvent: {}
+[0.699426] (-) TimerEvent: {}
+[0.799800] (-) TimerEvent: {}
+[0.900139] (-) TimerEvent: {}
+[1.000492] (-) TimerEvent: {}
+[1.101024] (-) TimerEvent: {}
+[1.201380] (-) TimerEvent: {}
+[1.301756] (-) TimerEvent: {}
+[1.403027] (-) TimerEvent: {}
+[1.503422] (-) TimerEvent: {}
+[1.603820] (-) TimerEvent: {}
+[1.612994] (multi_camera_robot_nav) Command: {'cmd': ['/usr/bin/python3', '-W', 'ignore:setup.py install is deprecated', '-W', 'ignore:easy_install command is deprecated', 'setup.py', 'develop', '--editable', '--build-directory', '/home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav/build', '--no-deps', 'symlink_data', '--force'], 'cwd': '/home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav', 'env': {'LESSOPEN': '| /usr/bin/lesspipe %s', 'USER': 'determ', 'CLAUDE_CODE_ENTRYPOINT': 'cli', 'GIT_EDITOR': 'true', 'XDG_SESSION_TYPE': 'x11', 'SHLVL': '2', 'LD_LIBRARY_PATH': '/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/aarch64-linux-gnu:/opt/ros/humble/lib:/usr/local/cuda-12.6/lib64:', 'VIPSHOME': '/target', 'HOME': '/home/determ', 'OLDPWD': '/home/determ', 'DESKTOP_SESSION': 'ubuntu', 'NVM_BIN': '/home/determ/.nvm/versions/node/v20.19.6/bin', 'NVM_INC': '/home/determ/.nvm/versions/node/v20.19.6/include/node', 'ROS_PYTHON_VERSION': '3', 'GNOME_SHELL_SESSION_MODE': 'ubuntu', 'GTK_MODULES': 'gail:atk-bridge', 'SYSTEMD_EXEC_PID': '21383', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'COLORTERM': 'truecolor', 'NVM_DIR': '/home/determ/.nvm', 'IM_CONFIG_PHASE': '1', 'ROS_DISTRO': 'humble', 'GTK_IM_MODULE': 'ibus', 'LOGNAME': 'determ', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'XDG_SESSION_CLASS': 'user', 'USERNAME': 'determ', 'TERM': 'xterm-256color', 'OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE': 'delta', 'GNOME_DESKTOP_SESSION_ID': 'this-is-deprecated', 'ROS_LOCALHOST_ONLY': '0', 'WINDOWPATH': '2', 'PATH': '/home/determ/.nvm/versions/node/v20.19.6/bin:/opt/ros/humble/bin:/usr/local/cuda-12.6/bin:/home/determ/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin', 'SESSION_MANAGER': 'local/ubuntu:@/tmp/.ICE-unix/21198,unix/ubuntu:/tmp/.ICE-unix/21198', 'COREPACK_ENABLE_AUTO_PIN': '0', 'XDG_MENU_PREFIX': 'gnome-', 'GNOME_TERMINAL_SCREEN': '/org/gnome/Terminal/screen/a7edf715_a7d4_40cf_a455_8a49d2642e49', 'XDG_RUNTIME_DIR': '/run/user/1000', 'DISPLAY': ':1', 'NoDefaultCurrentDirectoryInExePath': '1', 'LANG': 'en_NZ.UTF-8', 'XDG_CURRENT_DESKTOP': 'ubuntu:GNOME', 'XMODIFIERS': '@im=ibus', 'XDG_SESSION_DESKTOP': 'ubuntu', 'XAUTHORITY': '/run/user/1000/gdm/Xauthority', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:', 'GNOME_TERMINAL_SERVICE': ':1.96', 'SSH_AGENT_LAUNCHER': 'gnome-keyring', 'SSH_AUTH_SOCK': '/run/user/1000/keyring/ssh', 'AMENT_PREFIX_PATH': '/opt/ros/humble', 'SHELL': '/bin/bash', 'QT_ACCESSIBILITY': '1', 'GDMSESSION': 'ubuntu', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'CLAUDECODE': '1', 'GPG_AGENT_INFO': '/run/user/1000/gnupg/S.gpg-agent:0:1', 'QT_IM_MODULE': 'ibus', 'PWD': '/home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav', 'XDG_CONFIG_DIRS': '/etc/xdg/xdg-ubuntu:/etc/xdg', 'GEMINI_API_KEY': 'AIzaSyCeVR4d5_4L1rIvR8qdc7OZZ2jykGrvALA', 'NVM_CD_FLAGS': '', 'XDG_DATA_DIRS': '/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop', 'PYTHONPATH': '/home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/python3.10/site-packages:/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages', 'COLCON': '1', 'VTE_VERSION': '6800'}, 'shell': False}
+[1.703945] (-) TimerEvent: {}
+[1.804283] (-) TimerEvent: {}
+[1.904627] (-) TimerEvent: {}
+[2.005038] (-) TimerEvent: {}
+[2.105458] (-) TimerEvent: {}
+[2.199150] (multi_camera_robot_nav) StdoutLine: {'line': b'running develop\n'}
+[2.206005] (-) TimerEvent: {}
+[2.307545] (-) TimerEvent: {}
+[2.407906] (-) TimerEvent: {}
+[2.508307] (-) TimerEvent: {}
+[2.600016] (multi_camera_robot_nav) StdoutLine: {'line': b'running egg_info\n'}
+[2.600807] (multi_camera_robot_nav) StdoutLine: {'line': b'writing multi_camera_robot_nav.egg-info/PKG-INFO\n'}
+[2.601165] (multi_camera_robot_nav) StdoutLine: {'line': b'writing dependency_links to multi_camera_robot_nav.egg-info/dependency_links.txt\n'}
+[2.601428] (multi_camera_robot_nav) StdoutLine: {'line': b'writing entry points to multi_camera_robot_nav.egg-info/entry_points.txt\n'}
+[2.601738] (multi_camera_robot_nav) StdoutLine: {'line': b'writing requirements to multi_camera_robot_nav.egg-info/requires.txt\n'}
+[2.602027] (multi_camera_robot_nav) StdoutLine: {'line': b'writing top-level names to multi_camera_robot_nav.egg-info/top_level.txt\n'}
+[2.607468] (multi_camera_robot_nav) StdoutLine: {'line': b"reading manifest file 'multi_camera_robot_nav.egg-info/SOURCES.txt'\n"}
+[2.608374] (-) TimerEvent: {}
+[2.610626] (multi_camera_robot_nav) StdoutLine: {'line': b"writing manifest file 'multi_camera_robot_nav.egg-info/SOURCES.txt'\n"}
+[2.619269] (multi_camera_robot_nav) StdoutLine: {'line': b'running build_ext\n'}
+[2.620093] (multi_camera_robot_nav) StdoutLine: {'line': b'Creating /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/python3.10/site-packages/multi-camera-robot-nav.egg-link (link to .)\n'}
+[2.623127] (multi_camera_robot_nav) StdoutLine: {'line': b'Installing marker_tracker_node script to /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/multi_camera_robot_nav\n'}
+[2.624070] (multi_camera_robot_nav) StdoutLine: {'line': b'Installing occupancy_grid_mapper_node script to /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/multi_camera_robot_nav\n'}
+[2.625252] (multi_camera_robot_nav) StdoutLine: {'line': b'Installing point_cloud_stitcher_node script to /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/multi_camera_robot_nav\n'}
+[2.626363] (multi_camera_robot_nav) StdoutLine: {'line': b'Installing simulation_bridge_node script to /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/multi_camera_robot_nav\n'}
+[2.626941] (multi_camera_robot_nav) StdoutLine: {'line': b'Installing tf_broadcaster_node script to /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/lib/multi_camera_robot_nav\n'}
+[2.627751] (multi_camera_robot_nav) StdoutLine: {'line': b'\n'}
+[2.627926] (multi_camera_robot_nav) StdoutLine: {'line': b'Installed /home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav\n'}
+[2.628263] (multi_camera_robot_nav) StdoutLine: {'line': b'running symlink_data\n'}
+[2.628822] (multi_camera_robot_nav) StdoutLine: {'line': b'symbolically linking /home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav/resource/multi_camera_robot_nav -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/ament_index/resource_index/packages\n'}
+[2.629486] (multi_camera_robot_nav) StdoutLine: {'line': b'symbolically linking /home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav/package.xml -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/multi_camera_robot_nav\n'}
+[2.630038] (multi_camera_robot_nav) StdoutLine: {'line': b'symbolically linking /home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav/hooks/ament_prefix_path.dsv.in -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/multi_camera_robot_nav/hook\n'}
+[2.630582] (multi_camera_robot_nav) StdoutLine: {'line': b'symbolically linking /home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav/launch/gz_simulation.launch.py -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/multi_camera_robot_nav/launch\n'}
+[2.631254] (multi_camera_robot_nav) StdoutLine: {'line': b'symbolically linking /home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav/launch/mapping.launch.py -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/multi_camera_robot_nav/launch\n'}
+[2.631841] (multi_camera_robot_nav) StdoutLine: {'line': b'symbolically linking /home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav/launch/visualization.launch.py -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/multi_camera_robot_nav/launch\n'}
+[2.632479] (multi_camera_robot_nav) StdoutLine: {'line': b'symbolically linking /home/determ/MultiCameraMakerTracking/ros2_ws/build/multi_camera_robot_nav/launch/gazebo_simulation.launch.py -> /home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/multi_camera_robot_nav/launch\n'}
+[2.632980] (multi_camera_robot_nav) StderrLine: {'line': b"error: [Errno 2] No such file or directory: '/home/determ/MultiCameraMakerTracking/ros2_ws/install/multi_camera_robot_nav/share/multi_camera_robot_nav/launch/full_system.launch.py'\n"}
+[2.708599] (-) TimerEvent: {}
+[2.739574] (multi_camera_robot_nav) CommandEnded: {'returncode': 1}
+[2.740425] (multi_camera_robot_nav) JobEnded: {'identifier': 'multi_camera_robot_nav', 'rc': 1}
+[2.750720] (-) EventReactorShutdown: {}
